@@ -1358,15 +1358,17 @@ footer { text-align:center; padding:40px; border-top:1px solid var(--border); fo
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
 /* ===== LOADER ===== */
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    const loader = document.getElementById('loader');
-    if (loader) {
-      loader.classList.add('exit');
-      setTimeout(() => { loader.style.display = 'none'; }, 750);
-    }
-  }, 1600);
-});
+function dismissLoader() {
+  const loader = document.getElementById('loader');
+  if (loader && !loader.classList.contains('exit')) {
+    loader.classList.add('exit');
+    setTimeout(() => { loader.style.display = 'none'; }, 750);
+  }
+}
+// Normal path: dismiss 1.4s after all resources load
+window.addEventListener('load', () => setTimeout(dismissLoader, 1400));
+// Failsafe: dismiss after 3.5s max regardless (CDN slow/blocked)
+setTimeout(dismissLoader, 3500);
 
 /* ===== CURSOR ===== */
 const dot  = document.getElementById('cursor-dot');
