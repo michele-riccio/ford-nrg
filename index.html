@@ -576,6 +576,185 @@ footer { text-align:center; padding:40px; border-top:1px solid var(--border); fo
 .b-gold   { background:rgba(160,107,0,.1); color:var(--goldf); }
 .b-green  { background:rgba(26,110,63,.1); color:var(--green); }
 .b-purple { background:rgba(79,34,160,.1); color:var(--purple); }
+
+/* =====================================================================
+   RESPONSIVE — iPad (≤1024px) + Mobile (≤600px) + Small (≤400px)
+   ===================================================================== */
+
+/* ── Hide custom cursor on touch devices ── */
+@media(hover:none),(pointer:coarse) {
+  #cursor-dot, #cursor-ring { display:none !important; }
+}
+
+/* ── iPad / Large tablet: 600–1024px ── */
+@media(max-width:1024px) {
+  nav { padding:0 24px; }
+  .nav-links { gap:0; }
+  .nav-links a { padding:6px 9px; font-size:.72rem; }
+
+  .hero-inner { padding:0 32px; }
+  .hero-scroll { left:32px; }
+  .hero-deco { font-size:clamp(10rem,22vw,18rem); right:-10px; }
+
+  section { padding:88px 0; }
+  .wrap, .wrap-wide { padding:0 28px; }
+
+  .card { padding:26px; }
+  .proc-step { padding:28px 22px; }
+  .market-cell { padding:36px 28px; }
+  .persona-head { padding:26px 26px 0; }
+  .persona-tabs { padding:20px 26px 0; }
+  .p-tab-content { padding:16px 26px 24px; }
+
+  .gloss-term { min-width:140px; }
+  .hero-stat { padding-right:28px; }
+}
+
+/* ── Mobile landscape + small tablet: ≤900px (already covered per-component above,
+      but these fill the gaps) ── */
+@media(max-width:900px) {
+  .hero-inner { padding:0 24px; }
+  .hero-scroll { left:24px; }
+  .hero-sub { font-size:1rem; }
+  section { padding:72px 0; }
+  .wrap, .wrap-wide { padding:0 20px; }
+  .card { padding:22px; }
+  .mc-results { grid-template-columns:1fr 1fr; }
+  .mc-result-card { padding:18px 16px; }
+  .hbar-wrap { padding:22px; }
+  .gloss-item { flex-direction:column; gap:4px; }
+  .gloss-term { min-width:unset; }
+
+  /* competitor table: horizontal scroll on tablet */
+  .comp-table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .comp-table { min-width:640px; }
+
+  /* budget donut: stack */
+  .budget-inner { grid-template-columns:1fr; gap:24px; }
+  #budgetChart { max-width:260px; margin:0 auto; }
+
+  /* media channel rows */
+  .channel-row { gap:12px; }
+  .ch-pct { font-size:1.5rem; }
+
+  /* hero stats: 2 per row */
+  .hero-stats { padding-top:28px; }
+  .hero-stat { flex:0 0 calc(50% - 20px); min-width:0; padding-right:0; border-right:none; border-bottom:1px solid var(--border); padding-bottom:20px; margin-bottom:4px; }
+  .hero-stat:nth-last-child(-n+2) { border-bottom:none; }
+}
+
+/* ── Mobile: ≤600px ── */
+@media(max-width:600px) {
+  /* Loading screen */
+  .load-brand { font-size:clamp(2rem,12vw,3.5rem); }
+
+  /* Nav: only show logo */
+  nav { padding:0 16px; height:54px; }
+  .nav-ribrain img { height:14px; }
+  .nav-logo-sep { display:none; }
+
+  /* Hero */
+  .hero { padding:80px 0 48px; }
+  .hero-inner { padding:0 16px; }
+  .hero-tag { font-size:.7rem; padding:6px 14px; margin-bottom:28px; }
+  .hero-kicker { font-size:.75rem; }
+  .hero-sub { font-size:.92rem; margin-bottom:40px; }
+  .hero-scroll { display:none; }
+  .hero-deco { font-size:clamp(6rem,30vw,10rem); right:-8px; bottom:-10px; }
+
+  /* Hero stats: column */
+  .hero-stats { flex-direction:column; gap:0; padding-top:24px; }
+  .hero-stat { flex:unset; border-right:none; border-bottom:1px solid var(--border); padding:16px 0; margin-bottom:0; }
+  .hero-stat:last-child { border-bottom:none; }
+  .hero-stat-n { font-size:1.6rem; }
+
+  section { padding:56px 0; }
+  .wrap, .wrap-wide { padding:0 16px; }
+  h2.display { margin-bottom:12px; }
+  .s-desc { margin-bottom:32px; font-size:.92rem; }
+  .callout { padding:14px 16px; font-size:.84rem; }
+
+  /* Cards */
+  .card { padding:20px; border-radius:var(--r); }
+
+  /* Process steps: already 1col at 600px */
+  .proc-step { padding:24px 20px; }
+  .proc-n { font-size:2.8rem; }
+
+  /* Intro stats */
+  .istat { padding:18px 14px; }
+  .istat-n { font-size:1.8rem; }
+
+  /* Sec nav */
+  .sec-nav-item { padding:8px 14px; font-size:.7rem; }
+
+  /* Market */
+  .market-cell { padding:28px 20px; }
+  .big-stat { font-size:clamp(3rem,12vw,5rem); }
+
+  /* Personas */
+  .persona-head { padding:20px 20px 0; }
+  .persona-tabs { padding:16px 20px 0; flex-wrap:wrap; }
+  .p-tab-btn { font-size:.72rem; padding:7px 12px; }
+  .p-tab-content { padding:14px 20px 22px; }
+  .driver-row { font-size:.83rem; }
+
+  /* Stepper */
+  .stepper { gap:12px; }
+
+  /* Mappa */
+  #map { height:340px !important; }
+
+  /* Media channels */
+  .ch-pct { font-size:1.4rem; }
+  .fasce { grid-template-columns:1fr !important; }
+  .radio-g { gap:12px; }
+
+  /* Budget */
+  .budget-inner { gap:20px; }
+  #budgetChart { max-width:220px; }
+
+  /* Meta calculator */
+  .meta-calc { padding:22px 18px; }
+  .mc-title { font-size:1rem; }
+  .mc-sub { font-size:.76rem; }
+  .mc-health { padding:14px 16px; gap:12px; }
+  .mc-health-icon { font-size:1.2rem; }
+  .mc-results { grid-template-columns:1fr; gap:10px; }
+  .mc-result-val { font-size:1.5rem; }
+  .mc-result-card { padding:16px 14px; }
+  .mc-slider-name { font-size:.82rem; }
+  .mc-slider-val { font-size:.82rem; }
+  .mc-status-badge { font-size:.6rem; padding:2px 8px; }
+
+  /* Competitor table */
+  .comp-table-wrap { border-radius:var(--r); }
+  .comp-table { min-width:520px; font-size:.8rem; }
+  .comp-table td, .comp-table th { padding:10px 12px; }
+
+  /* Decisions */
+  .dec-card { padding:20px 16px; }
+
+  /* Glossary */
+  .gloss-item { padding:12px 0; }
+
+  /* Footer */
+  footer { padding:28px 16px; }
+}
+
+/* ── Small phones: ≤400px ── */
+@media(max-width:400px) {
+  .hero-inner { padding:0 14px; }
+  .wrap, .wrap-wide { padding:0 14px; }
+  nav { padding:0 14px; }
+  .nav-brand { font-size:.88rem; }
+  .nav-links { display:none !important; }
+  .persona-tabs { gap:4px; }
+  .p-tab-btn { font-size:.68rem; padding:6px 10px; }
+  .mc-slider-header { flex-wrap:wrap; gap:6px; }
+  .hero-stat-n { font-size:1.4rem; }
+  #map { height:280px !important; }
+}
 </style>
 </head>
 <body>
