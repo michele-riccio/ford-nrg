@@ -1,0 +1,1835 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ford NRG — Lancio Maggio 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<style>
+/* ===================== RESET & ROOT ===================== */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:       #FFFFFF;
+  --bg2:      #F0F5FC;
+  --bg3:      #E4EDF7;
+  --card:     rgba(0,52,120,0.04);
+  --card2:    rgba(0,52,120,0.08);
+  --border:   rgba(0,52,120,0.10);
+  --blue:     #003478;
+  --blue2:    #1666C1;
+  --gold:     #A06B00;
+  --goldf:    #C88200;
+  --green:    #1A6E3F;
+  --purple:   #4F22A0;
+  --red:      #C8202D;
+  --w:        #0D1F3C;
+  --w2:       #3D5475;
+  --w3:       #7A90B0;
+  --r: 14px; --rl: 22px;
+  --sh: 0 4px 28px rgba(0,52,120,0.10);
+  --sh2: 0 12px 48px rgba(0,52,120,0.14);
+}
+html { scroll-behavior:smooth; font-size:16px; }
+body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--w); overflow-x:hidden; line-height:1.7; cursor:none; }
+a { text-decoration:none; color:inherit; }
+img { display:block; max-width:100%; }
+button { font-family:inherit; cursor:none; }
+
+/* ===================== LOADER (Ford Blue) ===================== */
+#loader {
+  position:fixed; inset:0; z-index:99999;
+  background:var(--blue); display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:32px;
+  transition:opacity .7s ease, filter .7s ease;
+}
+#loader.exit { opacity:0; filter:blur(12px); pointer-events:none; }
+.load-brand {
+  font-size:clamp(2.5rem,8vw,5rem); font-weight:900;
+  letter-spacing:-.04em; display:flex; gap:.08em;
+}
+.load-letter {
+  display:inline-block; color:#fff;
+  opacity:0; transform:translateY(60px);
+  animation:lLetter .6s cubic-bezier(.16,1,.3,1) forwards;
+}
+@keyframes lLetter { to { opacity:1; transform:none; } }
+.load-sub {
+  font-size:.78rem; font-weight:500; color:rgba(255,255,255,.6);
+  text-transform:uppercase; letter-spacing:.16em;
+  opacity:0; animation:fadeIn .5s .9s forwards;
+}
+.load-bar-wrap { width:200px; height:2px; background:rgba(255,255,255,.15); border-radius:100px; overflow:hidden; }
+.load-bar {
+  height:100%; width:0;
+  background:linear-gradient(90deg,#fff,rgba(255,255,255,.6));
+  border-radius:100px;
+  animation:loadBar 1.4s cubic-bezier(.4,0,.2,1) .2s forwards;
+}
+@keyframes loadBar { to { width:100%; } }
+.load-letter.c1 { color:#fff; }
+.load-letter.c2 { color:rgba(255,255,255,.75); }
+
+/* ===================== CURSOR ===================== */
+#cursor-dot { width:8px; height:8px; background:var(--blue); border-radius:50%; position:fixed; transform:translate(-50%,-50%); transition:transform .1s; z-index:10001; pointer-events:none; }
+#cursor-ring { width:36px; height:36px; border:1.5px solid rgba(0,52,120,.4); border-radius:50%; position:fixed; transform:translate(-50%,-50%); pointer-events:none; z-index:10000; transition:width .3s, height .3s, border-color .3s; }
+body:has(a:hover) #cursor-ring, body:has(button:hover) #cursor-ring { width:52px; height:52px; border-color:var(--blue); }
+
+/* ===================== PROGRESS ===================== */
+#progress { position:fixed; top:0; left:0; width:0%; height:3px; background:linear-gradient(90deg,var(--blue),var(--blue2)); z-index:9999; transition:width .1s; }
+
+/* ===================== SIDE NAV DOTS ===================== */
+#sidenav {
+  position:fixed; right:24px; top:50%; transform:translateY(-50%);
+  z-index:800; display:flex; flex-direction:column; align-items:center; gap:10px;
+}
+.sn-item { position:relative; display:flex; align-items:center; justify-content:center; }
+.sn-dot {
+  width:6px; height:6px; background:var(--border);
+  background:rgba(0,52,120,.2);
+  border-radius:100px; cursor:none;
+  transition:width .35s cubic-bezier(.16,1,.3,1), height .35s cubic-bezier(.16,1,.3,1), background .35s;
+}
+.sn-dot.active { width:4px; height:28px; background:var(--blue); }
+.sn-tooltip {
+  position:absolute; right:calc(100% + 12px);
+  background:#fff; border:1px solid var(--border);
+  box-shadow:0 4px 16px rgba(0,52,120,.1);
+  border-radius:8px; padding:5px 12px;
+  font-size:.7rem; font-weight:600; color:var(--w2);
+  white-space:nowrap; pointer-events:none;
+  opacity:0; transform:translateX(6px);
+  transition:opacity .2s, transform .2s;
+}
+.sn-item:hover .sn-tooltip { opacity:1; transform:translateX(0); }
+@media(max-width:900px){ #sidenav{display:none} }
+
+/* ===================== NAV ===================== */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:1000;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 40px; height:60px;
+  background:rgba(255,255,255,.92); backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  box-shadow:0 1px 12px rgba(0,52,120,.06);
+}
+.nav-logo { display:flex; align-items:center; gap:14px; }
+.nav-brand { font-weight:800; font-size:1rem; letter-spacing:-.01em; color:var(--blue); }
+.nav-brand span { color:var(--blue2); }
+.nav-logo-sep { width:1px; height:20px; background:rgba(0,52,120,.18); flex-shrink:0; }
+.nav-ribrain { display:flex; align-items:center; }
+.nav-ribrain img { height:18px; width:auto; opacity:.72; filter:saturate(0) brightness(.25); transition:opacity .2s; }
+.nav-ribrain img:hover { opacity:1; }
+.nav-links { display:flex; gap:4px; list-style:none; }
+.nav-links a {
+  font-size:.75rem; font-weight:500; color:var(--w3);
+  padding:6px 12px; border-radius:100px;
+  transition:color .2s, background .2s;
+}
+.nav-links a:hover, .nav-links a.active { color:var(--blue); background:rgba(0,52,120,.07); }
+.nav-pill {
+  padding:8px 20px; border-radius:100px; border:1.5px solid var(--blue);
+  font-size:.78rem; font-weight:600; color:var(--blue);
+  background:transparent; transition:.2s;
+}
+.nav-pill:hover { background:var(--blue); color:#fff; }
+@media(max-width:900px){ .nav-links{display:none} }
+
+/* ===================== HERO ===================== */
+.hero {
+  min-height:100vh; display:flex; flex-direction:column; justify-content:center;
+  padding:100px 0 60px; position:relative; overflow:hidden;
+  background:linear-gradient(160deg, #F0F5FC 0%, #FFFFFF 55%, #EEF2FA 100%);
+}
+/* blobs — light blue/gold washes */
+.blob { position:absolute; border-radius:50%; filter:blur(90px); pointer-events:none; }
+.blob-1 { width:700px; height:700px; background:radial-gradient(circle,rgba(0,52,120,.09),transparent 70%); top:-200px; left:-200px; animation:float1 14s ease-in-out infinite; }
+.blob-2 { width:500px; height:500px; background:radial-gradient(circle,rgba(200,130,0,.07),transparent 70%); bottom:-100px; right:-100px; animation:float2 10s ease-in-out infinite; }
+.blob-3 { width:400px; height:400px; background:radial-gradient(circle,rgba(22,102,193,.06),transparent 70%); top:40%; left:60%; animation:float3 12s ease-in-out infinite; }
+@keyframes float1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(80px,60px)} }
+@keyframes float2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-60px,-80px)} }
+@keyframes float3 { 0%,100%{transform:translate(0,0)} 33%{transform:translate(40px,-40px)} 66%{transform:translate(-40px,40px)} }
+
+/* subtle grid */
+.hero::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:linear-gradient(rgba(0,52,120,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,52,120,.04) 1px,transparent 1px);
+  background-size:80px 80px;
+}
+
+/* decorative "2026" */
+.hero-deco {
+  position:absolute; right:-20px; bottom:-20px; z-index:0;
+  font-size:clamp(14rem,28vw,22rem); font-weight:900;
+  letter-spacing:-.06em; line-height:1;
+  color:transparent; -webkit-text-stroke:1px rgba(0,52,120,.05);
+  pointer-events:none; user-select:none;
+  animation:float3 18s ease-in-out infinite;
+}
+
+.hero-inner { position:relative; z-index:1; padding:0 60px; max-width:1400px; margin:0 auto; width:100%; }
+
+.hero-tag {
+  display:inline-flex; align-items:center; gap:10px;
+  border:1px solid rgba(0,52,120,.2); background:rgba(0,52,120,.06);
+  padding:8px 20px; border-radius:100px; margin-bottom:40px;
+  font-size:.78rem; font-weight:500; color:var(--blue); letter-spacing:.03em;
+}
+.hero-tag .pulse { width:7px; height:7px; background:var(--green); border-radius:50%; animation:pulseAnim 2s ease-in-out infinite; }
+@keyframes pulseAnim { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.8)} }
+
+.hero-kicker {
+  font-size:clamp(.85rem,1.5vw,.95rem); font-weight:500; color:var(--w3);
+  text-transform:uppercase; letter-spacing:.12em; margin-bottom:16px;
+}
+
+.hero-h1 {
+  font-size:clamp(3.5rem,9vw,9rem); font-weight:900; line-height:.95;
+  letter-spacing:-.04em; margin-bottom:32px; color:var(--w);
+}
+.hero-h1 .line { display:block; overflow:hidden; }
+.hero-h1 .line span { display:inline-block; transform:translateY(110%); animation:revealUp .9s cubic-bezier(.16,1,.3,1) forwards; }
+.hero-h1 .line:nth-child(2) span { animation-delay:.12s; }
+.hero-h1 .line:nth-child(3) span { animation-delay:.24s; }
+.hero-h1 .grd { background:linear-gradient(135deg,var(--blue),var(--blue2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+@keyframes revealUp { to{transform:translateY(0)} }
+
+.hero-sub { font-size:1.1rem; color:var(--w2); max-width:600px; margin-bottom:56px; opacity:0; animation:fadeIn .8s .6s forwards; }
+@keyframes fadeIn { to{opacity:1} }
+
+.hero-stats {
+  display:flex; gap:0; opacity:0; animation:fadeIn .8s .8s forwards;
+  border-top:1px solid var(--border); padding-top:40px; flex-wrap:wrap;
+}
+.hero-stat { flex:1; min-width:160px; padding-right:40px; border-right:1px solid var(--border); }
+.hero-stat:last-child { border-right:none; }
+.hero-stat-n { font-size:2rem; font-weight:800; color:var(--blue); }
+.hero-stat-l { font-size:.75rem; color:var(--w3); margin-top:2px; line-height:1.4; }
+
+.hero-scroll {
+  position:absolute; bottom:40px; left:60px; z-index:1;
+  display:flex; align-items:center; gap:12px;
+  font-size:.72rem; color:var(--w3); text-transform:uppercase; letter-spacing:.1em;
+  opacity:0; animation:fadeIn .8s 1.2s forwards;
+}
+.hero-scroll-line { width:40px; height:1px; background:var(--w3); }
+
+/* ===================== SECTION SYSTEM ===================== */
+section { padding:120px 0; position:relative; }
+.s-alt { background:var(--bg2); }
+.wrap { max-width:1200px; margin:0 auto; padding:0 40px; }
+.wrap-wide { max-width:1400px; margin:0 auto; padding:0 40px; }
+.s-label {
+  display:inline-flex; align-items:center; gap:10px; margin-bottom:14px;
+  font-size:.72rem; font-weight:700; color:var(--blue);
+  text-transform:uppercase; letter-spacing:.12em;
+}
+.s-label::before { content:''; width:28px; height:2px; background:var(--blue); }
+h2.display {
+  font-size:clamp(2rem,5vw,4.5rem); font-weight:900; line-height:1.05;
+  letter-spacing:-.03em; margin-bottom:16px; color:var(--w);
+}
+.s-desc { font-size:1rem; color:var(--w2); max-width:620px; line-height:1.8; margin-bottom:48px; }
+
+.callout {
+  background:rgba(0,52,120,.05); border-left:3px solid var(--blue);
+  padding:16px 22px; border-radius:0 var(--r) var(--r) 0;
+  margin-bottom:48px; font-size:.9rem; color:var(--w2); line-height:1.7;
+}
+.callout strong { color:var(--blue); }
+
+/* reveal */
+.rx { opacity:0; transform:translateY(32px) scale(0.995); transition:opacity .65s cubic-bezier(.22,1,.36,1), transform .65s cubic-bezier(.22,1,.36,1); }
+.rx.on { opacity:1; transform:translateY(0) scale(1); }
+.rx.d1{transition-delay:.08s} .rx.d2{transition-delay:.16s} .rx.d3{transition-delay:.24s} .rx.d4{transition-delay:.32s} .rx.d5{transition-delay:.40s} .rx.d6{transition-delay:.48s}
+
+/* ===================== CARDS ===================== */
+.card {
+  background:#fff; border:1px solid var(--border); border-radius:var(--rl);
+  padding:32px; transition:background .3s, transform .3s, box-shadow .3s;
+  position:relative; overflow:hidden; box-shadow:0 2px 12px rgba(0,52,120,.06);
+}
+.card:hover { background:#fff; transform:translateY(-4px); box-shadow:var(--sh2); border-color:rgba(0,52,120,.18); }
+.card-accent { position:absolute; top:0; left:0; right:0; height:3px; }
+/* shimmer on hover */
+.card::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(105deg, transparent 40%, rgba(0,52,120,.025) 50%, transparent 60%);
+  background-size:200% 100%; background-position:200% 0;
+  transition:background-position .6s ease; pointer-events:none; border-radius:var(--rl);
+}
+.card:hover::after { background-position:-200% 0; }
+
+.g2 { display:grid; grid-template-columns:repeat(2,1fr); gap:24px; }
+.g3 { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+.g4 { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+@media(max-width:900px){ .g2,.g3,.g4{grid-template-columns:1fr} }
+@media(min-width:600px) and (max-width:900px){ .g2{grid-template-columns:1fr 1fr} }
+
+/* ===================== INTRO / PROCESS ===================== */
+.process-steps { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:var(--rl); overflow:hidden; margin:40px 0; }
+.proc-step { background:#fff; padding:36px 28px; position:relative; transition:background .3s; }
+.proc-step:hover { background:var(--bg2); }
+.proc-n {
+  font-size:3.5rem; font-weight:900; letter-spacing:-.04em; line-height:1;
+  color:transparent; -webkit-text-stroke:1.5px rgba(0,52,120,.15);
+  margin-bottom:16px; transition:-webkit-text-stroke-color .3s;
+}
+.proc-step:hover .proc-n { -webkit-text-stroke-color:var(--blue); }
+.proc-icon { font-size:1.4rem; margin-bottom:12px; }
+.proc-title { font-size:.95rem; font-weight:700; color:var(--w); margin-bottom:8px; }
+.proc-desc { font-size:.8rem; color:var(--w3); line-height:1.6; }
+.proc-tag { display:inline-block; margin-top:14px; font-size:.68rem; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.08em; }
+@media(max-width:900px){ .process-steps{grid-template-columns:1fr 1fr} }
+@media(max-width:600px){ .process-steps{grid-template-columns:1fr} }
+
+.intro-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin:32px 0 40px; }
+.istat { background:#fff; border:1px solid var(--border); border-radius:var(--r); padding:24px 20px; text-align:center; box-shadow:0 2px 10px rgba(0,52,120,.06); }
+.istat-n { font-size:2.2rem; font-weight:900; color:var(--blue); line-height:1; }
+.istat-l { font-size:.72rem; color:var(--w3); margin-top:8px; line-height:1.4; }
+@media(max-width:900px){ .intro-stats{grid-template-columns:repeat(2,1fr)} }
+
+/* section navigator */
+.sec-nav { display:flex; flex-wrap:wrap; gap:8px; margin-top:40px; }
+.sec-nav-item {
+  display:flex; align-items:center; gap:8px; padding:10px 18px;
+  background:#fff; border:1px solid var(--border); border-radius:100px;
+  font-size:.75rem; font-weight:600; color:var(--w2);
+  text-decoration:none; transition:.25s;
+  box-shadow:0 1px 6px rgba(0,52,120,.06);
+}
+.sec-nav-item:hover { border-color:var(--blue); color:var(--blue); background:rgba(0,52,120,.05); }
+.sec-nav-item .sni-n { width:20px; height:20px; border-radius:50%; background:var(--blue); display:flex; align-items:center; justify-content:center; font-size:.65rem; font-weight:800; color:#fff; flex-shrink:0; }
+
+/* ===================== BIG STAT ===================== */
+.big-stat {
+  font-size:clamp(4rem,10vw,8rem); font-weight:900; letter-spacing:-.04em;
+  color:var(--blue); line-height:1;
+}
+.stat-label { font-size:.78rem; color:var(--w3); text-transform:uppercase; letter-spacing:.08em; margin-top:8px; }
+
+/* ===================== MARKET SECTION ===================== */
+.market-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1px; background:var(--border); border:1px solid var(--border); border-radius:var(--rl); overflow:hidden; margin-bottom:32px; }
+.market-cell { background:#fff; padding:48px 36px; }
+.market-cell:first-child { background:var(--bg3); }
+.market-context { font-size:.88rem; color:var(--w2); line-height:1.7; margin-top:12px; }
+@media(max-width:900px){ .market-grid{grid-template-columns:1fr} }
+
+/* Horizontal bar chart wrapper */
+.hbar-wrap { background:#fff; border:1px solid var(--border); border-radius:var(--rl); padding:32px; margin-bottom:32px; box-shadow:0 2px 12px rgba(0,52,120,.06); }
+.hbar-title { font-size:.85rem; font-weight:700; color:var(--w2); margin-bottom:20px; }
+
+/* ===================== PERSONAS ===================== */
+.persona-wrap { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+@media(max-width:900px){ .persona-wrap{grid-template-columns:1fr} }
+
+.persona-card { background:#fff; border:1px solid var(--border); border-radius:var(--rl); overflow:hidden; transition:transform .4s cubic-bezier(.22,1,.36,1), box-shadow .4s, border-color .3s; box-shadow:0 2px 12px rgba(0,52,120,.07); }
+.persona-card:hover { transform:translateY(-4px); box-shadow:var(--sh2); }
+.persona-head { padding:32px 32px 0; }
+.persona-icon { font-size:2.4rem; margin-bottom:16px; }
+.persona-tabs { display:flex; gap:2px; padding:24px 32px 0; flex-wrap:wrap; }
+.p-tab-btn { padding:8px 16px; border-radius:100px; border:1px solid var(--border); background:transparent; color:var(--w3); font-size:.75rem; font-weight:600; transition:.2s; cursor:none; }
+.p-tab-btn.active { background:var(--blue); border-color:var(--blue); color:#fff; }
+.p-tab-content { display:none; padding:20px 32px 28px; }
+.p-tab-content.active { display:block; }
+.driver-row { display:flex; align-items:flex-start; gap:10px; padding:9px 0; font-size:.88rem; color:var(--w2); border-bottom:1px solid rgba(0,52,120,.06); }
+.driver-row:last-child { border-bottom:none; }
+.driver-check { color:var(--green); font-weight:800; flex-shrink:0; }
+.driver-x { color:var(--red); font-weight:800; flex-shrink:0; }
+.persona-cta-bar { padding:18px 32px; background:rgba(0,52,120,.05); border-top:1px solid var(--border); font-size:.82rem; font-weight:600; color:var(--blue); display:flex; align-items:center; justify-content:space-between; }
+.persona-cta-bar .arrow { font-size:1rem; }
+
+/* stepper */
+.stepper { display:flex; margin:40px 0 0; position:relative; }
+.stepper::before { content:''; position:absolute; top:20px; left:20px; right:20px; height:1px; background:linear-gradient(90deg,var(--blue),rgba(0,52,120,.2),var(--green)); z-index:0; }
+.stepper-item { flex:1; text-align:center; position:relative; z-index:1; padding:0 8px; }
+.stepper-dot { width:40px; height:40px; border-radius:50%; margin:0 auto 12px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.78rem; }
+.stepper-text { font-size:.75rem; color:var(--w3); line-height:1.5; }
+.stepper-text strong { display:block; color:var(--w2); margin-bottom:2px; }
+@media(max-width:700px){ .stepper{flex-direction:column; gap:16px} .stepper::before{display:none} }
+
+/* ===================== DISTANCE ===================== */
+.dist-row { margin:20px 0; }
+.dist-meta { display:flex; justify-content:space-between; margin-bottom:8px; font-size:.85rem; }
+.dist-meta strong { color:var(--w); }
+.dist-meta span { color:var(--w3); font-size:.78rem; }
+.dist-track { height:44px; background:rgba(0,52,120,.05); border-radius:22px; overflow:hidden; }
+.dist-fill { height:100%; border-radius:22px; display:flex; align-items:center; padding:0 18px; font-weight:700; font-size:.82rem; color:#fff; white-space:nowrap; width:0; transition:width 1.6s cubic-bezier(.16,1,.3,1); }
+
+/* ===================== MAP ===================== */
+.map-section { padding:0; }
+.map-top { padding:80px 40px 40px; max-width:1200px; margin:0 auto; }
+.map-controls { display:flex; gap:10px; flex-wrap:wrap; margin-top:24px; }
+.map-toggle { display:flex; align-items:center; gap:8px; padding:10px 20px; border-radius:100px; border:1px solid var(--border); background:#fff; color:var(--w3); font-size:.78rem; font-weight:600; cursor:none; transition:.25s; box-shadow:0 1px 6px rgba(0,52,120,.06); }
+.map-toggle.on { border-color:var(--blue); color:var(--blue); background:rgba(0,52,120,.06); }
+.map-toggle .dot { width:10px; height:10px; border-radius:50%; }
+#map { height:520px; background:var(--bg2); }
+.map-legend { display:flex; gap:28px; flex-wrap:wrap; padding:20px 40px; max-width:1200px; margin:0 auto; }
+.legend-i { display:flex; align-items:center; gap:8px; font-size:.75rem; color:var(--w3); }
+.legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+
+/* leaflet — light theme */
+.leaflet-container { background:var(--bg2) !important; }
+.leaflet-popup-content-wrapper { background:#fff; border:1px solid var(--border); border-radius:12px; box-shadow:0 8px 32px rgba(0,52,120,.15); color:var(--w); }
+.leaflet-popup-tip { background:#fff; }
+.leaflet-popup-content { font-family:'Inter',sans-serif; font-size:13px; line-height:1.6; color:var(--w); }
+.leaflet-bar a { background:#fff; color:var(--blue); border-color:var(--border); }
+.leaflet-bar a:hover { background:var(--bg2); }
+
+/* ===================== MEDIA PLAN ===================== */
+.channel-list { display:flex; flex-direction:column; gap:2px; }
+.channel-row { display:grid; grid-template-columns:260px 1fr auto; align-items:center; gap:32px; padding:28px 32px; background:#fff; border:1px solid var(--border); transition:background .3s, box-shadow .4s cubic-bezier(.22,1,.36,1), transform .3s; box-shadow:0 1px 6px rgba(0,52,120,.05); }
+.channel-row:hover { background:var(--bg2); box-shadow:0 4px 20px rgba(0,52,120,.1); }
+.channel-row:first-child { border-top-left-radius:var(--rl); border-top-right-radius:var(--rl); }
+.channel-row:last-child { border-bottom-left-radius:var(--rl); border-bottom-right-radius:var(--rl); border-radius:0 0 var(--rl) var(--rl); }
+.ch-name { display:flex; align-items:center; gap:14px; }
+.ch-icon { font-size:1.6rem; }
+.ch-title { font-weight:700; color:var(--w); }
+.ch-subtitle { font-size:.75rem; color:var(--w3); }
+.ch-desc { font-size:.85rem; color:var(--w2); line-height:1.65; }
+.ch-pct { font-size:2.2rem; font-weight:900; letter-spacing:-.03em; color:var(--blue); white-space:nowrap; }
+.comp-warning { background:rgba(160,107,0,.06); border:1px solid rgba(160,107,0,.2); border-radius:var(--r); padding:22px 28px; margin-top:24px; display:flex; gap:16px; align-items:flex-start; }
+.comp-warning .icon { font-size:1.4rem; flex-shrink:0; }
+.comp-warning p { font-size:.88rem; color:var(--w2); line-height:1.7; }
+.comp-warning strong { color:var(--goldf); }
+@media(max-width:900px){ .channel-row{grid-template-columns:1fr; gap:16px} .ch-pct{font-size:1.6rem} }
+
+/* ===================== RADIO ===================== */
+.radio-g { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:40px; }
+.radio-card { background:#fff; border:1px solid var(--border); border-radius:var(--rl); padding:28px; transition:.3s; box-shadow:0 2px 10px rgba(0,52,120,.06); }
+.radio-card:hover { border-color:rgba(160,107,0,.3); box-shadow:0 4px 20px rgba(0,52,120,.1); }
+.r-badge { display:inline-block; padding:4px 12px; border-radius:100px; font-size:.68rem; font-weight:700; margin-bottom:12px; }
+.r-hi { background:rgba(26,110,63,.1); color:var(--green); }
+.fasce { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+.fascia { background:#fff; border:1px solid var(--border); border-radius:var(--r); padding:16px 12px; text-align:center; box-shadow:0 1px 6px rgba(0,52,120,.05); }
+.fascia-time { font-size:.78rem; font-weight:700; color:var(--blue); }
+.fascia-name { font-size:.7rem; color:var(--w3); margin-top:4px; }
+.fascia-note { font-size:.68rem; color:var(--w3); margin-top:6px; line-height:1.4; }
+@media(max-width:900px){ .radio-g{grid-template-columns:1fr} .fasce{grid-template-columns:1fr 1fr} }
+
+/* ===================== BUDGET ===================== */
+.budget-switch { display:flex; background:var(--bg2); border:1px solid var(--border); border-radius:100px; padding:4px; width:fit-content; margin:0 auto 48px; }
+.bsw-btn { padding:12px 32px; border-radius:100px; border:none; background:transparent; color:var(--w3); font-weight:600; font-size:.88rem; transition:.25s; cursor:none; font-family:inherit; }
+.bsw-btn.on { background:var(--blue); color:#fff; }
+.budget-inner { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center; }
+.budget-detail h3 { font-size:1.6rem; font-weight:800; margin-bottom:8px; color:var(--w); }
+.budget-detail p { color:var(--w2); font-size:.9rem; line-height:1.7; margin-bottom:24px; }
+.brow { display:flex; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--border); font-size:.9rem; }
+.brow:last-child { border-bottom:none; }
+.brow span { color:var(--w2); }
+.brow strong { color:var(--w); font-weight:700; }
+.chart-wrap { position:relative; max-width:340px; margin:0 auto; }
+@media(max-width:900px){ .budget-inner{grid-template-columns:1fr; gap:32px} }
+
+/* ===================== META CALCULATOR ===================== */
+.meta-calc { background:#fff; border:1px solid var(--border); border-radius:var(--rl); padding:40px; margin:32px 0; box-shadow:0 2px 16px rgba(0,52,120,.08); }
+.mc-title { font-size:1.1rem; font-weight:700; margin-bottom:4px; color:var(--w); }
+.mc-sub { font-size:.82rem; color:var(--w3); margin-bottom:32px; }
+.mc-sliders { display:grid; grid-template-columns:1fr 1fr 1fr; gap:32px; margin-bottom:36px; }
+.mc-slider-group { display:flex; flex-direction:column; gap:10px; }
+.mc-slider-label { display:flex; justify-content:space-between; align-items:baseline; }
+.mc-slider-name { font-size:.8rem; font-weight:600; color:var(--w2); }
+.mc-slider-val { font-size:1rem; font-weight:800; color:var(--blue); }
+
+/* custom range slider */
+input[type=range].mc-range {
+  -webkit-appearance:none; appearance:none;
+  width:100%; height:4px; border-radius:2px;
+  background:linear-gradient(90deg, var(--blue) var(--fill,50%), rgba(0,52,120,.12) var(--fill,50%));
+  outline:none; cursor:none;
+}
+input[type=range].mc-range::-webkit-slider-thumb {
+  -webkit-appearance:none; appearance:none;
+  width:18px; height:18px; border-radius:50%;
+  background:#fff; border:2.5px solid var(--blue);
+  box-shadow:0 0 0 3px rgba(0,52,120,.12), 0 2px 8px rgba(0,52,120,.2);
+  transition:transform .15s, box-shadow .15s;
+}
+input[type=range].mc-range:hover::-webkit-slider-thumb { transform:scale(1.2); box-shadow:0 0 0 5px rgba(0,52,120,.1), 0 4px 14px rgba(0,52,120,.25); }
+input[type=range].mc-range::-moz-range-thumb { width:18px; height:18px; border-radius:50%; background:#fff; border:2.5px solid var(--blue); cursor:none; }
+
+.mc-results { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.mc-result-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r); padding:24px; text-align:center; }
+.mc-result-val { font-size:1.6rem; font-weight:900; }
+.mc-result-lbl { font-size:.72rem; color:var(--w3); margin-top:6px; }
+.mc-formula { font-size:.75rem; color:var(--w3); margin-top:6px; font-style:italic; }
+
+.meta-formula-box { background:rgba(0,52,120,.04); border:1px solid rgba(0,52,120,.1); border-radius:var(--r); padding:20px 24px; margin-top:16px; }
+.meta-formula-box code { font-size:.82rem; color:var(--blue); line-height:2; display:block; }
+.assumptions { background:rgba(160,107,0,.04); border:1px solid rgba(160,107,0,.15); border-radius:var(--r); padding:22px 24px; margin-top:20px; }
+.assumptions h4 { color:var(--goldf); font-size:.85rem; margin-bottom:8px; }
+.assumptions p { font-size:.82rem; color:var(--w2); line-height:1.8; }
+@media(max-width:900px){ .mc-sliders{grid-template-columns:1fr} .mc-results{grid-template-columns:1fr 1fr} }
+
+/* ===== GUARDRAIL ZONES ===== */
+.mc-slider-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+.mc-status-badge {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:3px 10px; border-radius:100px;
+  font-size:.65rem; font-weight:700; white-space:nowrap;
+  transition:background .35s, color .35s;
+}
+.mc-status-badge.ok   { background:rgba(26,110,63,.1);  color:#1A6E3F; }
+.mc-status-badge.warn { background:rgba(160,107,0,.1);  color:#A06B00; }
+.mc-status-badge.bad  { background:rgba(200,32,45,.08); color:#9B1C27; }
+.mc-status-badge .sb-dot { width:5px; height:5px; border-radius:50%; background:currentColor; flex-shrink:0; }
+
+/* Zone bar under slider */
+.mc-zone-bar { display:flex; height:5px; border-radius:3px; overflow:hidden; margin-top:6px; margin-bottom:2px; }
+
+/* Slider fill color adapts to zone */
+input[type=range].mc-range.zone-ok {
+  background:linear-gradient(90deg, #1A6E3F var(--fill,50%), rgba(26,110,63,.12) var(--fill,50%));
+}
+input[type=range].mc-range.zone-warn {
+  background:linear-gradient(90deg, #A06B00 var(--fill,50%), rgba(160,107,0,.12) var(--fill,50%));
+}
+input[type=range].mc-range.zone-bad {
+  background:linear-gradient(90deg, #9B1C27 var(--fill,50%), rgba(200,32,45,.1) var(--fill,50%));
+}
+input[type=range].mc-range.zone-ok::-webkit-slider-thumb {
+  border-color:#1A6E3F; box-shadow:0 0 0 3px rgba(26,110,63,.14), 0 2px 8px rgba(26,110,63,.2);
+}
+input[type=range].mc-range.zone-warn::-webkit-slider-thumb {
+  border-color:#A06B00; box-shadow:0 0 0 3px rgba(160,107,0,.14), 0 2px 8px rgba(160,107,0,.2);
+}
+input[type=range].mc-range.zone-bad::-webkit-slider-thumb {
+  border-color:#9B1C27; box-shadow:0 0 0 3px rgba(200,32,45,.14), 0 2px 8px rgba(200,32,45,.2);
+}
+
+/* Value label inherits zone color */
+.mc-slider-val.ok   { color:#1A6E3F !important; }
+.mc-slider-val.warn { color:#A06B00 !important; }
+.mc-slider-val.bad  { color:#9B1C27 !important; }
+
+/* Campaign health banner */
+.mc-health {
+  display:flex; align-items:flex-start; gap:16px;
+  padding:18px 22px; border-radius:var(--r);
+  margin-bottom:28px;
+  transition:background .4s, border-color .4s, box-shadow .4s;
+  border: 1px solid transparent;
+}
+.mc-health.ok   { background:rgba(26,110,63,.06); border-color:rgba(26,110,63,.2); }
+.mc-health.warn { background:rgba(160,107,0,.06); border-color:rgba(160,107,0,.22); }
+.mc-health.bad  { background:rgba(200,32,45,.05); border-color:rgba(200,32,45,.22); animation:hPulse 2.2s ease-in-out infinite; }
+@keyframes hPulse {
+  0%,100% { box-shadow:0 0 0 0 rgba(200,32,45,0); }
+  50%     { box-shadow:0 0 0 5px rgba(200,32,45,.07); }
+}
+.mc-health-icon { font-size:1.4rem; flex-shrink:0; margin-top:1px; }
+.mc-health-body { flex:1; }
+.mc-health-title { font-size:.88rem; font-weight:700; }
+.mc-health-title.ok   { color:#1A6E3F; }
+.mc-health-title.warn { color:#A06B00; }
+.mc-health-title.bad  { color:#9B1C27; }
+.mc-health-desc  { font-size:.78rem; color:var(--w3); margin-top:4px; line-height:1.55; }
+.mc-health-tags  { display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
+.mc-health-tag   { font-size:.65rem; font-weight:600; padding:2px 9px; border-radius:100px; background:rgba(0,0,0,.05); color:var(--w3); }
+
+/* ===================== TIMELINE ===================== */
+.tl { position:relative; padding-left:60px; }
+.tl::before { content:''; position:absolute; left:24px; top:8px; bottom:0; width:1px; background:linear-gradient(to bottom,var(--blue),var(--green),transparent); }
+.tl-item { position:relative; padding-bottom:56px; }
+.tl-item:last-child { padding-bottom:0; }
+.tl-dot { position:absolute; left:-60px; top:0; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.82rem; color:#fff; z-index:1; }
+.tl-item:nth-child(1) .tl-dot { background:var(--blue); box-shadow:0 0 18px rgba(0,52,120,.3); }
+.tl-item:nth-child(2) .tl-dot { background:var(--gold); box-shadow:0 0 18px rgba(160,107,0,.3); }
+.tl-item:nth-child(3) .tl-dot { background:var(--green); box-shadow:0 0 18px rgba(26,110,63,.3); }
+.tl-card { background:#fff; border:1px solid var(--border); border-radius:var(--r); padding:28px; box-shadow:0 2px 12px rgba(0,52,120,.07); }
+.tl-phase { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
+.tl-actions { margin-top:16px; display:flex; flex-direction:column; gap:10px; }
+.tl-action { display:flex; gap:10px; font-size:.86rem; color:var(--w2); }
+.tl-action .dot2 { width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; margin-top:7px; }
+
+/* ===================== COMPETITORS ===================== */
+.comp-table { width:100%; border-collapse:collapse; }
+.comp-table th { text-align:left; padding:12px 16px; font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--w3); border-bottom:2px solid var(--border); font-weight:600; }
+.comp-table td { padding:16px; font-size:.86rem; color:var(--w2); border-bottom:1px solid rgba(0,52,120,.06); vertical-align:top; }
+.comp-table tr:hover td { background:var(--bg2); }
+.comp-table td:first-child { color:var(--w); font-weight:600; }
+.threat-high { background:rgba(200,32,45,.08); color:#9B1C27; border:1px solid rgba(200,32,45,.2); display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:100px; font-size:.7rem; font-weight:700; white-space:nowrap; }
+.threat-mid  { background:rgba(160,107,0,.1); color:var(--goldf); border:1px solid rgba(160,107,0,.2); display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:100px; font-size:.7rem; font-weight:700; white-space:nowrap; }
+.threat-low  { background:rgba(26,110,63,.08); color:var(--green); border:1px solid rgba(26,110,63,.15); display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:100px; font-size:.7rem; font-weight:700; white-space:nowrap; }
+
+/* ===================== CTA FINAL ===================== */
+.cta-sec { background:linear-gradient(135deg,rgba(0,52,120,.07),rgba(160,107,0,.04)); border:1.5px solid rgba(0,52,120,.14); border-radius:var(--rl); padding:64px 56px; text-align:center; }
+.dec-g { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin:40px 0; }
+.dec-card { background:#fff; border:1px solid var(--border); border-radius:var(--r); padding:24px; text-align:left; box-shadow:0 2px 10px rgba(0,52,120,.06); }
+.dec-n { width:32px; height:32px; border-radius:50%; background:var(--blue); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.75rem; color:#fff; margin-bottom:12px; }
+.dec-card h4 { font-size:.88rem; font-weight:700; margin-bottom:8px; color:var(--w); }
+.dec-card p { font-size:.78rem; color:var(--w3); line-height:1.6; }
+@media(max-width:900px){ .dec-g{grid-template-columns:1fr 1fr} }
+@media(max-width:600px){ .dec-g{grid-template-columns:1fr} }
+
+.gloss-item { display:flex; gap:16px; padding:14px 0; border-bottom:1px solid var(--border); }
+.gloss-term { font-weight:700; color:var(--blue); min-width:180px; font-size:.88rem; }
+.gloss-def { font-size:.85rem; color:var(--w2); }
+
+/* ===================== FOOTER ===================== */
+footer { text-align:center; padding:40px; border-top:1px solid var(--border); font-size:.75rem; color:var(--w3); background:var(--bg2); }
+
+/* ===================== BADGES ===================== */
+.badge { display:inline-flex; align-items:center; padding:5px 12px; border-radius:100px; font-size:.7rem; font-weight:600; gap:6px; }
+.b-blue   { background:rgba(0,52,120,.1); color:var(--blue); }
+.b-gold   { background:rgba(160,107,0,.1); color:var(--goldf); }
+.b-green  { background:rgba(26,110,63,.1); color:var(--green); }
+.b-purple { background:rgba(79,34,160,.1); color:var(--purple); }
+</style>
+</head>
+<body>
+
+<!-- ===================== LOADER ===================== -->
+<div id="loader">
+  <div class="load-brand">
+    <span class="load-letter c1" style="animation-delay:.05s">F</span>
+    <span class="load-letter c1" style="animation-delay:.1s">O</span>
+    <span class="load-letter c1" style="animation-delay:.15s">R</span>
+    <span class="load-letter c1" style="animation-delay:.2s">D</span>
+    <span class="load-letter" style="animation-delay:.3s; color:rgba(255,255,255,.1); margin:0 .12em;">&nbsp;</span>
+    <span class="load-letter c2" style="animation-delay:.35s">N</span>
+    <span class="load-letter c2" style="animation-delay:.4s">R</span>
+    <span class="load-letter c2" style="animation-delay:.45s">G</span>
+  </div>
+  <div class="load-sub">Strategia Lancio · Maggio 2026</div>
+  <div class="load-bar-wrap"><div class="load-bar"></div></div>
+</div>
+
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+<div id="progress"></div>
+
+<!-- SIDE NAV DOTS -->
+<div id="sidenav">
+  <div class="sn-item"><a href="#hero"      onclick="return false"><div class="sn-dot active" data-sec="hero"></div></a><div class="sn-tooltip">Copertina</div></div>
+  <div class="sn-item"><a href="#intro"     onclick="return false"><div class="sn-dot" data-sec="intro"></div></a><div class="sn-tooltip">Come è nato</div></div>
+  <div class="sn-item"><a href="#mercato"   onclick="return false"><div class="sn-dot" data-sec="mercato"></div></a><div class="sn-tooltip">Mercato</div></div>
+  <div class="sn-item"><a href="#personas"  onclick="return false"><div class="sn-dot" data-sec="personas"></div></a><div class="sn-tooltip">Clienti target</div></div>
+  <div class="sn-item"><a href="#distanze"  onclick="return false"><div class="sn-dot" data-sec="distanze"></div></a><div class="sn-tooltip">Geografie</div></div>
+  <div class="sn-item"><a href="#mappa"     onclick="return false"><div class="sn-dot" data-sec="mappa"></div></a><div class="sn-tooltip">Mappa territorio</div></div>
+  <div class="sn-item"><a href="#media"     onclick="return false"><div class="sn-dot" data-sec="media"></div></a><div class="sn-tooltip">Media plan</div></div>
+  <div class="sn-item"><a href="#radio"     onclick="return false"><div class="sn-dot" data-sec="radio"></div></a><div class="sn-tooltip">Piano Radio</div></div>
+  <div class="sn-item"><a href="#budget"    onclick="return false"><div class="sn-dot" data-sec="budget"></div></a><div class="sn-tooltip">Budget</div></div>
+  <div class="sn-item"><a href="#meta-dash" onclick="return false"><div class="sn-dot" data-sec="meta-dash"></div></a><div class="sn-tooltip">Calcolatore Meta</div></div>
+  <div class="sn-item"><a href="#timeline"  onclick="return false"><div class="sn-dot" data-sec="timeline"></div></a><div class="sn-tooltip">Timeline</div></div>
+  <div class="sn-item"><a href="#competitors" onclick="return false"><div class="sn-dot" data-sec="competitors"></div></a><div class="sn-tooltip">Competitor</div></div>
+  <div class="sn-item"><a href="#cta"       onclick="return false"><div class="sn-dot" data-sec="cta"></div></a><div class="sn-tooltip">Prossimi passi</div></div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">
+    <div class="nav-brand">Ford <span>NRG</span></div>
+    <div class="nav-logo-sep"></div>
+    <a class="nav-ribrain" href="https://www.ribrainstudio.com" target="_blank" rel="noopener" title="RiBrain Studio — Agenzia">
+      <img src="https://www.ribrainstudio.com/wp-content/uploads/2025/01/Logo_ribrain_Nero.svg" alt="RiBrain Studio" onerror="this.style.display='none'">
+    </a>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#intro">Come è nato</a></li>
+    <li><a href="#mercato">Mercato</a></li>
+    <li><a href="#personas">Clienti</a></li>
+    <li><a href="#mappa">Mappa</a></li>
+    <li><a href="#media">Media</a></li>
+    <li><a href="#budget">Budget</a></li>
+    <li><a href="#cta">Decisioni</a></li>
+  </ul>
+
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="hero-deco">2026</div>
+  <div class="hero-inner">
+    <div class="hero-tag"><span class="pulse"></span>Strategia Lancio · Maggio 2026 · Campania</div>
+    <div class="hero-kicker">Ford NRG — Nuova sede</div>
+    <h1 class="hero-h1">
+      <span class="line"><span>Castello</span></span>
+      <span class="line"><span class="grd">di Cisterna</span></span>
+      <span class="line"><span style="font-size:.38em; font-weight:300; color:var(--w2); letter-spacing:-.01em;">Piano B2B · Noleggio + Transit Center</span></span>
+    </h1>
+    <p class="hero-sub">Come intercettare aziende e partite IVA nell'hinterland napoletano — ogni scelta è motivata dai dati, ogni sezione spiega il perché.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-n">33%</div><div class="hero-stat-l">PMI preferisce<br>noleggio lungo termine</div></div>
+      <div class="hero-stat" style="padding-left:40px"><div class="hero-stat-n">79%</div><div class="hero-stat-l">vuole manutenzione<br>inclusa nella rata</div></div>
+      <div class="hero-stat" style="padding-left:40px"><div class="hero-stat-n">66%</div><div class="hero-stat-l">mette al 1° posto<br>la rapidità del servizio</div></div>
+      <div class="hero-stat" style="padding-left:40px"><div class="hero-stat-n">4 canali</div><div class="hero-stat-l">Meta · Radio · OOH<br>Google Search</div></div>
+    </div>
+  </div>
+  <div class="hero-scroll"><span class="hero-scroll-line"></span>Scorri per esplorare</div>
+</section>
+
+<!-- INTRO: COME ABBIAMO COSTRUITO QUESTO PIANO -->
+<section id="intro">
+  <div class="wrap">
+    <div class="rx"><div class="s-label">00 — Il metodo</div></div>
+    <div class="rx d1"><h2 class="display">Come abbiamo<br>costruito questo piano.</h2></div>
+    <div class="rx d2"><p class="s-desc">Non è un piano generico "adattato" alla zona. Ogni raccomandazione nasce da un processo in 4 fasi: analisi, mappatura, profilazione e pianificazione operativa.</p></div>
+
+    <div class="process-steps rx d2">
+      <div class="proc-step">
+        <div class="proc-n">01</div>
+        <div class="proc-icon">📊</div>
+        <div class="proc-title">Analisi di mercato</div>
+        <div class="proc-desc">Dati UNRAE 2024 su formule di accesso veicoli commerciali. Trend PMI campane: NLT, leasing, acquisto diretto. Comportamenti reali, non proiezioni teoriche.</div>
+        <div class="proc-tag">4 fonti analizzate</div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-n">02</div>
+        <div class="proc-icon">📍</div>
+        <div class="proc-title">Mappatura geografica</div>
+        <div class="proc-desc">50+ comuni dell'area metropolitana di Napoli classificati in due livelli operativi: L1 (raggio service, ~25 min) e L2 (raggio noleggio, fino a 150 km).</div>
+        <div class="proc-tag">52 comuni mappati</div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-n">03</div>
+        <div class="proc-icon">👤</div>
+        <div class="proc-title">Profilazione target</div>
+        <div class="proc-desc">Due personas definite su comportamenti reali: PMI/artigiani con 2–15 mezzi e Responsabili flotta. Motivazioni, obiezioni, canali preferiti e percorso d'acquisto.</div>
+        <div class="proc-tag">2 personas validate</div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-n">04</div>
+        <div class="proc-icon">📡</div>
+        <div class="proc-title">Piano media e budget</div>
+        <div class="proc-desc">4 canali con ruoli distinti: Meta (intercettazione), Radio (memorabilità), OOH (presenza fisica), Google Search/Maps (domanda calda). 3 fasi operative da pre-lancio a post.</div>
+        <div class="proc-tag">4 canali · 3 fasi</div>
+      </div>
+    </div>
+
+    <div class="intro-stats rx d3">
+      <div class="istat"><div class="istat-n">4</div><div class="istat-l">fonti di mercato<br>analizzate</div></div>
+      <div class="istat"><div class="istat-n">52</div><div class="istat-l">comuni<br>mappati</div></div>
+      <div class="istat"><div class="istat-n">6</div><div class="istat-l">competitor<br>monitorati</div></div>
+      <div class="istat"><div class="istat-n">4</div><div class="istat-l">canali media<br>pianificati</div></div>
+    </div>
+
+    <div class="rx d3">
+      <p style="font-size:.88rem; color:var(--w3); margin-bottom:16px; font-weight:600; text-transform:uppercase; letter-spacing:.08em;">Esplora le sezioni</p>
+      <div class="sec-nav">
+        <a href="#mercato"    class="sec-nav-item"><span class="sni-n">1</span>Il mercato</a>
+        <a href="#personas"  class="sec-nav-item"><span class="sni-n">2</span>Chi intercettare</a>
+        <a href="#distanze"  class="sec-nav-item"><span class="sni-n">3</span>Le geografie</a>
+        <a href="#mappa"     class="sec-nav-item"><span class="sni-n">4</span>Mappa territorio</a>
+        <a href="#media"     class="sec-nav-item"><span class="sni-n">5</span>I canali</a>
+        <a href="#radio"     class="sec-nav-item"><span class="sni-n">5b</span>Piano Radio</a>
+        <a href="#budget"    class="sec-nav-item"><span class="sni-n">6</span>Due scenari budget</a>
+        <a href="#meta-dash" class="sec-nav-item"><span class="sni-n">7</span>Calcolatore Meta</a>
+        <a href="#timeline"  class="sec-nav-item"><span class="sni-n">8</span>3 fasi operative</a>
+        <a href="#competitors" class="sec-nav-item"><span class="sni-n">9</span>Competitor</a>
+        <a href="#cta"       class="sec-nav-item"><span class="sni-n">10</span>Prossimi passi</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MERCATO -->
+<section class="s-alt" id="mercato">
+  <div class="wrap">
+    <div class="rx"><div class="s-label">01 — Il contesto</div></div>
+    <div class="rx d1"><h2 class="display">Numeri reali.<br>Scelte precise.</h2></div>
+    <div class="rx d2"><div class="callout"><strong>A cosa serve:</strong> capire perché puntiamo su noleggio veicoli commerciali e assistenza rapida — non sul retail generico. I dati di mercato confermano che le imprese campane hanno bisogni concreti e in larga parte non ancora serviti bene.</div></div>
+
+    <div class="market-grid rx d2">
+      <div class="market-cell">
+        <div class="big-stat" data-count="33" data-suffix="%">0%</div>
+        <div class="stat-label">noleggio lungo termine</div>
+        <p class="market-context">La formula più scelta dalle aziende. Il 29% sceglie leasing, il 20% finanziamento. La tendenza cresce ogni anno: le PMI vogliono costi fissi, non immobilizzi di capitale.</p>
+      </div>
+      <div class="market-cell">
+        <div class="big-stat" data-count="79" data-suffix="%">0%</div>
+        <div class="stat-label">vuole tutto incluso</div>
+        <p class="market-context">Rata fissa, zero sorprese, nessun pensiero. Il pacchetto "completo" è ciò che cercano: manutenzione, assicurazione, sostitutiva. Un solo interlocutore che gestisce tutto.</p>
+      </div>
+      <div class="market-cell">
+        <div class="big-stat" data-count="66" data-suffix="%">0%</div>
+        <div class="stat-label">priorità: rapidità servizio</div>
+        <p class="market-context">Per un'azienda ogni ora di fermo veicolo è denaro perso. Servono tempi certi e risposte veloci — non promesse vaghe o tempi di attesa non comunicati.</p>
+      </div>
+    </div>
+
+    <!-- Horizontal bar chart: formule accesso veicoli -->
+    <div class="hbar-wrap rx d3">
+      <div class="hbar-title">Formule di accesso ai veicoli commerciali — Campione PMI Italia (fonte: UNRAE / Arval Mobility Observatory 2024)</div>
+      <canvas id="formulaChart" height="160"></canvas>
+    </div>
+
+    <div class="card rx d3" style="text-align:center; padding:48px; background:linear-gradient(135deg,rgba(0,102,255,.08),rgba(200,146,10,.04));">
+      <p style="font-size:clamp(1.2rem,2.5vw,1.8rem); font-weight:800; line-height:1.3; max-width:700px; margin:0 auto;">
+        «Noleggio per aziende + assistenza rapida.<br>
+        <span style="color:var(--blue2);">Così il lavoro non si ferma.»</span>
+      </p>
+      <p style="font-size:.8rem; color:var(--w3); margin-top:16px;">Messaggio unico del lancio — da usare coerentemente su tutti i canali</p>
+    </div>
+  </div>
+</section>
+
+<!-- PERSONAS -->
+<section id="personas">
+  <div class="wrap">
+    <div class="rx"><div class="s-label">02 — Chi vogliamo intercettare</div></div>
+    <div class="rx d1"><h2 class="display">Due profili,<br>un approccio preciso.</h2></div>
+    <div class="rx d2"><div class="callout"><strong>A cosa serve:</strong> conoscere i clienti tipo per scegliere messaggi, canali e offerte giuste. Non parliamo a tutti — parliamo a chi ha un bisogno reale <em>oggi</em>. Il profilo A è la priorità operativa del lancio.</div></div>
+
+    <div class="persona-wrap">
+      <!-- Persona A -->
+      <div class="persona-card rx d1">
+        <div class="card-accent" style="background:linear-gradient(90deg,var(--blue),var(--blue2));"></div>
+        <div class="persona-head">
+          <div class="persona-icon">🚐</div>
+          <span class="badge b-blue">Persona A — Priorità Alta</span>
+          <h3 style="margin-top:12px; font-size:1.4rem;">PMI e Artigiani</h3>
+          <p style="color:var(--w3); font-size:.85rem; margin-top:4px;">2–15 mezzi · Titolari · Partite IVA</p>
+        </div>
+        <div class="persona-tabs">
+          <button class="p-tab-btn active" onclick="pTab(this,'pA','driver')">Driver</button>
+          <button class="p-tab-btn" onclick="pTab(this,'pA','obiezioni')">Obiezioni</button>
+          <button class="p-tab-btn" onclick="pTab(this,'pA','canali')">Canali</button>
+        </div>
+        <div class="p-tab-content active" id="pA-driver">
+          <div class="driver-row"><span class="driver-check">✓</span>Rinnovo mezzo da lavoro o crescita commesse che richiedono più veicoli</div>
+          <div class="driver-row"><span class="driver-check">✓</span>Guasti ricorrenti — serve un furgone affidabile, aggiornato, sempre disponibile</div>
+          <div class="driver-row"><span class="driver-check">✓</span>Formula rata fissa, tutto incluso, senza sorprese a fine mese</div>
+          <div class="driver-row"><span class="driver-check">✓</span>Un referente unico che risponde rapidamente (WhatsApp, non call center)</div>
+          <div class="driver-row"><span class="driver-check">✓</span>Auto sostitutiva garantita durante la manutenzione — zero fermo cantiere</div>
+        </div>
+        <div class="p-tab-content" id="pA-obiezioni">
+          <div class="driver-row"><span class="driver-x">✗</span>Tempi lunghi di fermo veicolo — ogni giorno senza il mezzo è fatturato perso</div>
+          <div class="driver-row"><span class="driver-x">✗</span>Preventivi poco trasparenti o sorprese in fattura a fine contratto</div>
+          <div class="driver-row"><span class="driver-x">✗</span>Nessun referente dedicato alle aziende — trattati come cliente privato</div>
+          <div class="driver-row"><span class="driver-x">✗</span>Offerte standard, non personalizzate per settore o volume</div>
+        </div>
+        <div class="p-tab-content" id="pA-canali">
+          <div class="driver-row"><span class="driver-check">→</span>Facebook/Instagram ads geo-targettate per settore (edilizia, logistica, food)</div>
+          <div class="driver-row"><span class="driver-check">→</span>WhatsApp come primo contatto rapido — messaggi diretti, risposta entro 1h</div>
+          <div class="driver-row"><span class="driver-check">→</span>Radio: raggiunge in auto/furgone durante il lavoro, fasce mattina/pomeriggio</div>
+          <div class="driver-row"><span class="driver-check">→</span>Google Maps: indicazioni stradali + call diretta — momento di massima intenzione</div>
+        </div>
+        <div class="persona-cta-bar">
+          <span>«Richiedi una proposta per la tua azienda»</span>
+          <span class="arrow">→</span>
+        </div>
+      </div>
+
+      <!-- Persona B -->
+      <div class="persona-card rx d2">
+        <div class="card-accent" style="background:linear-gradient(90deg,var(--purple),#c084fc);"></div>
+        <div class="persona-head">
+          <div class="persona-icon">📊</div>
+          <span class="badge b-purple">Persona B — Secondario</span>
+          <h3 style="margin-top:12px; font-size:1.4rem;">Responsabile Flotta</h3>
+          <p style="color:var(--w3); font-size:.85rem; margin-top:4px;">Flotte medio-grandi · Decisioni strutturate</p>
+        </div>
+        <div class="persona-tabs">
+          <button class="p-tab-btn active" onclick="pTab(this,'pB','driver')">Driver</button>
+          <button class="p-tab-btn" onclick="pTab(this,'pB','obiezioni')">Obiezioni</button>
+          <button class="p-tab-btn" onclick="pTab(this,'pB','canali')">Canali</button>
+        </div>
+        <div class="p-tab-content active" id="pB-driver">
+          <div class="driver-row"><span class="driver-check">✓</span>Razionalizzazione costi flotta / rinnovo contratti NLT in scadenza</div>
+          <div class="driver-row"><span class="driver-check">✓</span>Transizione (anche parziale) verso elettrico/ibrido con supporto consulenziale</div>
+          <div class="driver-row"><span class="driver-check">✓</span>Il 41% del segmento monitora già il TCO degli EV: costi totali, non solo rata</div>
+          <div class="driver-row"><span class="driver-check">✓</span>Strumenti digitali per gestire la flotta (Fleet Manager, reportistica)</div>
+          <div class="driver-row"><span class="driver-check">✓</span>Pick-up/delivery per manutenzione: zero trasferte, zero ore perse</div>
+        </div>
+        <div class="p-tab-content" id="pB-obiezioni">
+          <div class="driver-row"><span class="driver-x">✗</span>Costo iniziale veicoli elettrici ancora percepito come alto</div>
+          <div class="driver-row"><span class="driver-x">✗</span>Infrastrutture di ricarica e valore residuo incerti nel medio termine</div>
+          <div class="driver-row"><span class="driver-x">✗</span>Processi di approvazione interni lunghi: il sì non è del singolo</div>
+          <div class="driver-row"><span class="driver-x">✗</span>Scarsa personalizzazione dell'offerta NLT per volumi medi</div>
+        </div>
+        <div class="p-tab-content" id="pB-canali">
+          <div class="driver-row"><span class="driver-check">→</span>LinkedIn per outreach diretto (budget opzionale — da attivare in fase 2)</div>
+          <div class="driver-row"><span class="driver-check">→</span>Email + telefono: consulenza diretta con referente commerciale dedicato</div>
+          <div class="driver-row"><span class="driver-check">→</span>Piattaforme B2B Fleet Management (Arval, ALD, LeasePlan)</div>
+          <div class="driver-row"><span class="driver-check">→</span>Appuntamenti one-to-one con analisi TCO su misura (15–30 min)</div>
+        </div>
+        <div class="persona-cta-bar">
+          <span>«Prenota un'analisi costi su misura (15 min)»</span>
+          <span class="arrow">→</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stepper -->
+    <div class="rx d3" style="margin-top:48px;">
+      <h3 style="margin-bottom:6px;">Come decide un'azienda</h3>
+      <p style="color:var(--w3); font-size:.88rem; margin-bottom:28px;">Percorso tipico dalla necessità alla firma del contratto — ogni touchpoint deve essere presidiato.</p>
+      <div class="stepper">
+        <div class="stepper-item">
+          <div class="stepper-dot" style="background:var(--blue);"><span>1</span></div>
+          <div class="stepper-text"><strong>Bisogno</strong>Mezzo in panne, fine leasing, nuova commessa</div>
+        </div>
+        <div class="stepper-item">
+          <div class="stepper-dot" style="background:#1a4fa8;"><span>2</span></div>
+          <div class="stepper-text"><strong>Ricerca</strong>Google Maps, WhatsApp colleghi, social</div>
+        </div>
+        <div class="stepper-item">
+          <div class="stepper-dot" style="background:var(--gold);"><span>3</span></div>
+          <div class="stepper-text"><strong>Confronto</strong>2–3 preventivi, condizioni, tempi consegna</div>
+        </div>
+        <div class="stepper-item">
+          <div class="stepper-dot" style="background:#916a08;"><span>4</span></div>
+          <div class="stepper-text"><strong>Visita</strong>In sede, prova veicolo, proposta su misura</div>
+        </div>
+        <div class="stepper-item">
+          <div class="stepper-dot" style="background:var(--green);"><span>5</span></div>
+          <div class="stepper-text"><strong>Firma</strong>Contratto + onboarding assistenza</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DISTANZE -->
+<section class="s-alt" id="distanze">
+  <div class="wrap">
+    <div class="rx"><div class="s-label">03 — Firma vs Assistenza</div></div>
+    <div class="rx d1"><h2 class="display">Due geografie,<br>un piano solo.</h2></div>
+    <div class="rx d2"><div class="callout"><strong>A cosa serve:</strong> per firmare un contratto di noleggio un'azienda si sposta anche 80–150 km, ma per l'assistenza vuole stare entro 25 minuti di guida. Questa differenza cambia radicalmente il targeting geografico e il messaggio da usare su ogni canale.</div></div>
+
+    <div class="g2" style="margin-bottom:32px;">
+      <div class="card rx d1">
+        <div class="card-accent" style="background:linear-gradient(90deg,var(--purple),#c084fc);"></div>
+        <span class="badge b-purple" style="margin-bottom:16px;">Livello 2</span>
+        <h3 style="margin-bottom:6px;">📝 Firma / Noleggio</h3>
+        <p style="color:var(--w3); font-size:.85rem; margin-bottom:20px;">Quanto lontano si muove un'azienda per un contratto vantaggioso?</p>
+        <div class="dist-row">
+          <div class="dist-meta"><strong>Range operativo</strong><span>50–150 km</span></div>
+          <div class="dist-track"><div class="dist-fill" style="background:linear-gradient(90deg,var(--purple),#c084fc); --tw:88%;">50–150 km</div></div>
+        </div>
+        <p style="font-size:.8rem; color:var(--w3); margin-top:12px;">Mediana: 50–100 km · Massimo documentato: ~150 km</p>
+        <p style="font-size:.83rem; color:var(--w2); margin-top:10px; line-height:1.6;"><strong>Cosa li fa muovere:</strong> allestimenti specifici, contratto NLT conveniente, consulenza fiscale chiara, pronta disponibilità in magazzino.</p>
+      </div>
+      <div class="card rx d2">
+        <div class="card-accent" style="background:linear-gradient(90deg,var(--blue),var(--blue2));"></div>
+        <span class="badge b-blue" style="margin-bottom:16px;">Livello 1</span>
+        <h3 style="margin-bottom:6px;">🔧 Assistenza / Tagliando</h3>
+        <p style="color:var(--w3); font-size:.85rem; margin-bottom:20px;">Quanto lontano accettano di andare per la manutenzione?</p>
+        <div class="dist-row">
+          <div class="dist-meta"><strong>Massimo accettato</strong><span>≤ 25 min di guida</span></div>
+          <div class="dist-track"><div class="dist-fill" style="background:linear-gradient(90deg,var(--blue),var(--blue2)); --tw:35%;">≤ 25 min</div></div>
+        </div>
+        <p style="font-size:.8rem; color:var(--w3); margin-top:12px;">L'80% non supera 25 minuti · Solo il 15% va oltre</p>
+        <p style="font-size:.83rem; color:var(--w2); margin-top:10px; line-height:1.6;"><strong>Regola locale:</strong> in area urbana 30 minuti ≈ 10 km (traffico). Contano i <em>minuti</em>, non i km — specialmente a Napoli Est.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MAPPA -->
+<section class="map-section s-alt" id="mappa">
+  <div class="map-top rx">
+    <div class="s-label">04 — Dove operiamo</div>
+    <h2 class="display">Mappa del territorio.</h2>
+    <p style="color:var(--w2); font-size:.95rem; max-width:600px; line-height:1.7; margin-top:8px;">Comuni Livello 1 (service + locale), Livello 2 (noleggio raggio ampio), marker competitor. Usa i filtri per accendere/spegnere i livelli.</p>
+    <div class="map-controls">
+      <div class="map-toggle on" data-layer="l1" onclick="toggleLayer('l1',this)"><span class="dot" style="background:#0066FF;"></span>L1 — Service + locale</div>
+      <div class="map-toggle on" data-layer="l2" onclick="toggleLayer('l2',this)"><span class="dot" style="background:#8B5CF6;"></span>L2 — Noleggio ampio</div>
+      <div class="map-toggle on" data-layer="comp" onclick="toggleLayer('comp',this)"><span class="dot" style="background:#EF4444;"></span>Competitor</div>
+      <div class="map-toggle on" data-layer="hq" onclick="toggleLayer('hq',this)"><span class="dot" style="background:#F0BC3C;"></span>Sede NRG</div>
+    </div>
+  </div>
+  <div id="map"></div>
+  <div class="map-legend">
+    <div class="legend-i"><div class="legend-dot" style="background:#0066FF;"></div>Livello 1 · ~25 min · "Assistenza rapida, meno fermo veicolo"</div>
+    <div class="legend-i"><div class="legend-dot" style="background:#8B5CF6;"></div>Livello 2 · raggio ampio · "Condizioni chiare, soluzione su misura"</div>
+    <div class="legend-i"><div class="legend-dot" style="background:#EF4444;"></div>Competitor con forte presenza locale</div>
+    <div class="legend-i"><div class="legend-dot" style="background:#F0BC3C;"></div>Nuova sede Ford NRG</div>
+  </div>
+</section>
+
+<!-- MEDIA PLAN -->
+<section id="media">
+  <div class="wrap">
+    <div class="rx"><div class="s-label">05 — Come raggiungiamo le aziende</div></div>
+    <div class="rx d1"><h2 class="display">I canali.<br>Il loro ruolo.</h2></div>
+    <div class="rx d2"><div class="callout"><strong>A cosa serve:</strong> ogni canale ha un compito preciso e non sostituibile. Meta intercetta chi non ci conosce ancora, Radio crea memorabilità nel tempo, i cartelloni segnalano la presenza fisica, Google cattura chi cerca già oggi. Nessun canale è spreco se usato con un obiettivo.</div></div>
+
+    <div class="channel-list">
+      <div class="channel-row rx d1">
+        <div class="ch-name"><span class="ch-icon">📱</span><div><div class="ch-title">Meta Ads</div><div class="ch-subtitle">Facebook + Instagram</div></div></div>
+        <div class="ch-desc">Intercetta PMI locali e settori "da furgone" con messaggi diretti su geo + interesse. <strong>3 campagne:</strong> Lead/WhatsApp (contatto rapido), Traffico sito (chi vuole leggere), Remarketing (chi ha già visitato). Competitor forte nella zona? Meta ridotto + messaggio differenziante sulla prossimità.</div>
+        <div class="ch-pct">45–55%</div>
+      </div>
+      <div class="channel-row rx d2">
+        <div class="ch-name"><span class="ch-icon">📻</span><div><div class="ch-title">Radio</div><div class="ch-subtitle">2 emittenti forti</div></div></div>
+        <div class="ch-desc">Raggiunge artigiani e titolari in auto/furgone durante le ore di lavoro. La ripetizione costruisce memorabilità del brand nel tempo. <strong>Radio Marte</strong> (leader regionale, FM + DAB+ + web) + <strong>Radio Punto Nuovo</strong> (~40 trasmettitori, tutta Campania). 4–6 spot/giorno, nelle fasce di massimo ascolto.</div>
+        <div class="ch-pct">25–35%</div>
+      </div>
+      <div class="channel-row rx d3">
+        <div class="ch-name"><span class="ch-icon">📍</span><div><div class="ch-title">Cartelloni OOH</div><div class="ch-subtitle">Solo zone limitrofe</div></div></div>
+        <div class="ch-desc">Segnale fisico sulle direttrici da lavoro verso aree industriali e artigianali (svincoli, assi Napoli Est). Non è branding generico: è <strong>presenza mirata</strong>. Pochi impianti acquistabili nelle posizioni strategiche. Niente locandine o QR casually distribuiti.</div>
+        <div class="ch-pct">15–25%</div>
+      </div>
+      <div class="channel-row rx d4">
+        <div class="ch-name"><span class="ch-icon">🔍</span><div><div class="ch-title">Google Search + Maps</div><div class="ch-subtitle">Consigliato se c'è budget</div></div></div>
+        <div class="ch-desc">Cattura la domanda <strong>già calda</strong>: chi cerca oggi, decide oggi. Indicazioni stradali, chiamate dirette, click WhatsApp. Uso prioritario: zone con competitor forte — riduce la pressione Meta e intercetta chi sta cercando esattamente quello che offriamo.</div>
+        <div class="ch-pct">0–10%</div>
+      </div>
+    </div>
+
+    <div class="comp-warning rx d3">
+      <div class="icon">⚠️</div>
+      <p><strong>Strategia nei comuni con competitor forte</strong> (Casoria, Nola, Somma Vesuviana, Pagani): non escludiamo il comune — facciamo Meta ridotto + messaggio differenziante: <strong>"comodità / meno fermo veicolo"</strong>. In parallelo, Google Search/Maps per intercettare la domanda già attiva.</p>
+    </div>
+  </div>
+</section>
+
+<!-- RADIO DETAIL -->
+<section class="s-alt" id="radio">
+  <div class="wrap">
+    <div class="rx"><div class="s-label">05B — Piano Radio</div></div>
+    <div class="rx d1"><h2 class="display">Radio: emittenti<br>e fasce.</h2></div>
+    <div class="rx d2"><div class="callout"><strong>A cosa serve:</strong> 2 emittenti con copertura massima invece di 4–5 con copertura frammentata. L'obiettivo è raggiungere chi guida furgoni e auto da lavoro nelle fasce di massimo ascolto, creando memorabilità prima dell'apertura.</div></div>
+
+    <div class="radio-g">
+      <div class="radio-card rx d1">
+        <span class="r-badge r-hi">Priorità alta</span>
+        <h3 style="margin-bottom:8px;">Radio Marte</h3>
+        <p style="color:var(--w3); font-size:.82rem; margin-bottom:12px;">Leader regionale cross-media · FM + DAB+ + web streaming</p>
+        <p style="font-size:.85rem; color:var(--w2); line-height:1.7;">Copertura: Napoli e provincia completa (95.6, 97.7, 97.9 MHz), Caserta, Salerno, Avellino, Benevento. Pacchetti cross-media radio + social + digital. Pubblico: fascia adulta 30–55, inclusa utenza business e artigianale.</p>
+      </div>
+      <div class="radio-card rx d2">
+        <span class="r-badge r-hi">Priorità alta</span>
+        <h3 style="margin-bottom:8px;">Radio Punto Nuovo</h3>
+        <p style="color:var(--w3); font-size:.82rem; margin-bottom:12px;">~40 trasmettitori · Tutta la Campania</p>
+        <p style="font-size:.85rem; color:var(--w2); line-height:1.7;">Frequenze: Napoli 95 MHz, comuni vesuviani, Nola, Caserta, Salerno. Forte componente talk e sportiva. Ascolto molto forte nelle fasce mattutine — esattamente quando artigiani e imprenditori sono già operativi e in auto.</p>
+      </div>
+    </div>
+
+    <h3 class="rx" style="margin-bottom:6px;">Fasce orarie consigliate</h3>
+    <p class="rx d1" style="color:var(--w3); font-size:.88rem; margin-bottom:20px;">4–6 spot al giorno per emittente · Flight: 3 settimane pre-evento + settimana inaugurazione (6–8 spot/giorno)</p>
+    <div class="fasce rx d2">
+      <div class="fascia"><div class="fascia-time">06:30–09:00</div><div class="fascia-name">Morning Drive</div><div class="fascia-note">Imprenditori in strada, radio nel furgone. Fascia a più alta attenzione.</div></div>
+      <div class="fascia"><div class="fascia-time">10:00–12:00</div><div class="fascia-name">Tarda Mattina</div><div class="fascia-note">Ascolto in laboratorio/ufficio. Tariffe più accessibili, buon rendimento.</div></div>
+      <div class="fascia"><div class="fascia-time">12:00–14:30</div><div class="fascia-name">Pre-pranzo</div><div class="fascia-note">Spostamenti e pause. Buon ascolto in auto durante le consegne.</div></div>
+      <div class="fascia"><div class="fascia-time">16:30–19:00</div><div class="fascia-name">Afternoon Drive</div><div class="fascia-note">Rientro dal lavoro, ultime consegne. Rinforzo del messaggio mattutino.</div></div>
+    </div>
+    <div class="card rx d3" style="margin-top:24px;">
+      <h4 style="margin-bottom:10px;">📢 CTA radio (semplice, diretto, memorabile)</h4>
+      <p style="color:var(--w2); font-size:.95rem; font-style:italic;">"Nuova sede Ford a Castello di Cisterna — per aziende. Scrivici su WhatsApp o prenota un incontro veloce di 15 minuti."</p>
+      <p style="color:var(--w3); font-size:.78rem; margin-top:10px;">Spot 20" e 30" in mix · Numero WhatsApp nella creatività · Nessuna melodia da ricordare: solo un'azione chiara e ripetuta.</p>
+    </div>
+  </div>
+</section>
+
+<!-- BUDGET -->
+<section id="budget">
+  <div class="wrap">
+    <div class="rx"><div class="s-label">06 — Quanto investire</div></div>
+    <div class="rx d1"><h2 class="display">Due scenari.<br>Una logica.</h2></div>
+    <div class="rx d2"><div class="callout"><strong>A cosa serve:</strong> due approcci invece di un numero fisso. Consigliato = copertura completa L1 + L2. Minimo = dominiamo il territorio vicino (L1), espandiamo al L2 solo quando arrivano segnali concreti. Regola: <strong>meglio dominare poco che coprire tutto debolmente.</strong></div></div>
+
+    <div class="budget-switch rx d2">
+      <button class="bsw-btn on" onclick="switchBudget('cons',this)">✦ Consigliato</button>
+      <button class="bsw-btn" onclick="switchBudget('min',this)">↓ Minimo</button>
+    </div>
+
+    <div class="budget-inner rx d3">
+      <div class="chart-wrap"><canvas id="budgetChart"></canvas></div>
+      <div class="budget-detail">
+        <div id="bd-cons">
+          <span class="badge b-green" style="margin-bottom:16px;">Piano Consigliato</span>
+          <h3>Copertura completa L1 + L2</h3>
+          <p>Meta ha il peso maggiore: intercetta PMI e settori specifici. Radio crea memorabilità. OOH segna la presenza fisica. Google cattura la domanda calda. Tutti e quattro i canali attivi sin dal lancio.</p>
+          <div class="brow"><span>📱 Meta Ads</span><strong>45–55%</strong></div>
+          <div class="brow"><span>📻 Radio (2 emittenti)</span><strong>25–35%</strong></div>
+          <div class="brow"><span>📍 OOH limitrofo</span><strong>15–25%</strong></div>
+          <div class="brow"><span>🔍 Google Search/Maps</span><strong>0–10%</strong></div>
+        </div>
+        <div id="bd-min" style="display:none;">
+          <span class="badge b-gold" style="margin-bottom:16px;">Piano Minimo</span>
+          <h3>Quasi tutto su L1, poi espansione</h3>
+          <p>Concentra il budget sul territorio vicino. Quando arrivano contatti aziende validi e appuntamenti concreti, si allarga gradualmente al L2 con budget incrementale.</p>
+          <div class="brow"><span>📱 Meta Ads (focus L1)</span><strong>55–65%</strong></div>
+          <div class="brow"><span>📻 Radio (2 emittenti)</span><strong>20–30%</strong></div>
+          <div class="brow"><span>📍 OOH (pochi impianti)</span><strong>10–20%</strong></div>
+          <div class="brow"><span>🔵 L2</span><strong>Solo dopo trazione L1</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- META CALCULATOR -->
+<section class="s-alt" id="meta-dash">
+  <div class="wrap">
+    <div class="rx"><div class="s-label">07 — Stime Meta Ads</div></div>
+    <div class="rx d1"><h2 class="display">Calcolatore<br>Meta interattivo.</h2></div>
+    <div class="rx d2"><div class="callout"><strong>A cosa serve:</strong> simulare in tempo reale il potenziale di una campagna Meta in base a reach, frequency e CPM. Tutti i parametri sono modificabili — i numeri cambiano istantaneamente. L'audience reale va sempre verificata su Meta Ads Manager.</div></div>
+
+    <div class="meta-calc rx d2">
+      <div class="mc-title">Simulatore campagna Meta Ads</div>
+      <div class="mc-sub">Muovi i parametri — i guardrail ti dicono se sei nel range corretto per il lancio</div>
+
+      <!-- Health banner -->
+      <div class="mc-health ok" id="mc-health">
+        <div class="mc-health-icon" id="mc-health-icon">✅</div>
+        <div class="mc-health-body">
+          <div class="mc-health-title ok" id="mc-health-title">Parametri nella finestra ottimale per il lancio</div>
+          <div class="mc-health-desc" id="mc-health-desc">Reach, frequency e CPM sono allineati. La campagna può girare senza aggiustamenti.</div>
+          <div class="mc-health-tags" id="mc-health-tags"></div>
+        </div>
+      </div>
+
+      <div class="mc-sliders">
+        <!-- REACH -->
+        <div class="mc-slider-group">
+          <div class="mc-slider-header">
+            <span class="mc-slider-name">Reach</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="mc-slider-val ok" id="val-reach">30.000</span>
+              <span class="mc-status-badge ok" id="badge-reach"><span class="sb-dot"></span><span id="badge-reach-txt">Range ottimale</span></span>
+            </div>
+          </div>
+          <input type="range" class="mc-range zone-ok" id="sl-reach" min="5000" max="100000" step="1000" value="30000" oninput="updateCalc()">
+          <!-- Zone bar: red 0-10.5% | yellow 10.5-21.1% | green 21.1-57.9% | yellow 57.9-78.9% | red 78.9-100% -->
+          <div class="mc-zone-bar">
+            <div style="width:10.5%;background:rgba(200,32,45,.25);"></div>
+            <div style="width:10.6%;background:rgba(160,107,0,.3);"></div>
+            <div style="width:36.8%;background:rgba(26,110,63,.3);"></div>
+            <div style="width:21%;background:rgba(160,107,0,.3);"></div>
+            <div style="width:21.1%;background:rgba(200,32,45,.25);"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:.62rem;color:var(--w3);margin-top:1px;">
+            <span>5k</span><span style="color:rgba(200,32,45,.5)">⚑ 10k</span><span style="color:rgba(26,110,63,.7)">15k–60k ✓</span><span style="color:rgba(200,32,45,.5)">80k ⚑</span><span>100k</span>
+          </div>
+        </div>
+
+        <!-- FREQUENCY -->
+        <div class="mc-slider-group">
+          <div class="mc-slider-header">
+            <span class="mc-slider-name">Frequency</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="mc-slider-val ok" id="val-freq">12×</span>
+              <span class="mc-status-badge ok" id="badge-freq"><span class="sb-dot"></span><span id="badge-freq-txt">Finestra ideale</span></span>
+            </div>
+          </div>
+          <input type="range" class="mc-range zone-ok" id="sl-freq" min="4" max="20" step="1" value="12" oninput="updateCalc()">
+          <!-- Zone bar: red 0-12.5% | yellow 12.5-25% | green 25-75% | yellow 75-87.5% | red 87.5-100% -->
+          <div class="mc-zone-bar">
+            <div style="width:12.5%;background:rgba(200,32,45,.25);"></div>
+            <div style="width:12.5%;background:rgba(160,107,0,.3);"></div>
+            <div style="width:50%;background:rgba(26,110,63,.3);"></div>
+            <div style="width:12.5%;background:rgba(160,107,0,.3);"></div>
+            <div style="width:12.5%;background:rgba(200,32,45,.25);"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:.62rem;color:var(--w3);margin-top:1px;">
+            <span>4×</span><span style="color:rgba(200,32,45,.5)">⚑ 6×</span><span style="color:rgba(26,110,63,.7)">8–16× ✓</span><span style="color:rgba(200,32,45,.5)">18× ⚑</span><span>20×</span>
+          </div>
+        </div>
+
+        <!-- CPM -->
+        <div class="mc-slider-group">
+          <div class="mc-slider-header">
+            <span class="mc-slider-name">CPM (€)</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="mc-slider-val ok" id="val-cpm">10,00 €</span>
+              <span class="mc-status-badge warn" id="badge-cpm"><span class="sb-dot"></span><span id="badge-cpm-txt">CPM nella norma</span></span>
+            </div>
+          </div>
+          <input type="range" class="mc-range zone-ok" id="sl-cpm" min="6" max="15" step="0.5" value="10" oninput="updateCalc()">
+          <!-- Zone bar: green 0-33.3% | yellow 33.3-66.7% | red 66.7-100% -->
+          <div class="mc-zone-bar">
+            <div style="width:33.3%;background:rgba(26,110,63,.3);"></div>
+            <div style="width:33.4%;background:rgba(160,107,0,.3);"></div>
+            <div style="width:33.3%;background:rgba(200,32,45,.25);"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:.62rem;color:var(--w3);margin-top:1px;">
+            <span>6€</span><span style="color:rgba(26,110,63,.7)">≤9€ ✓</span><span style="color:rgba(160,107,0,.7)">9–12€</span><span style="color:rgba(200,32,45,.5)">⚑ 12€</span><span>15€</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mc-results" id="mc-results">
+        <div class="mc-result-card" id="rc-impr">
+          <div class="mc-result-val" id="res-impr" style="color:var(--blue);">360.000</div>
+          <div class="mc-result-lbl">Impressions totali</div>
+          <div class="mc-formula">Reach × Frequency</div>
+        </div>
+        <div class="mc-result-card" id="rc-budget">
+          <div class="mc-result-val" id="res-budget" style="color:var(--goldf);">3.600 €</div>
+          <div class="mc-result-lbl">Budget stimato/mese</div>
+          <div class="mc-formula">Impr ÷ 1.000 × CPM</div>
+        </div>
+        <div class="mc-result-card" id="rc-cpm">
+          <div class="mc-result-val" id="res-cpc" style="color:var(--green);">10,000 €</div>
+          <div class="mc-result-lbl">CPM verificato</div>
+          <div class="mc-formula">Budget ÷ Impr × 1.000</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="g2 rx d3" style="margin-top:24px;">
+      <div class="meta-formula-box">
+        <div style="font-size:.8rem; font-weight:700; color:var(--blue2); margin-bottom:8px;">📐 Formula</div>
+        <code>Impressions = Reach × Frequency</code>
+        <code>Budget/mese = (Impressions ÷ 1.000) × CPM</code>
+        <code style="color:var(--goldf);">Es. L1: 30k reach × 14 freq = 420k impr → ~3.400–5.000€/mese</code>
+        <code style="color:var(--goldf);">Es. L2: 50k reach × 10 freq = 500k impr → ~4.000–6.000€/mese</code>
+      </div>
+      <div class="assumptions">
+        <h4>📋 Assunzioni dichiarate</h4>
+        <p>
+          • <strong>Flight:</strong> 4 settimane&nbsp;·&nbsp;
+          <strong>CPM Italia B2B:</strong> 8–12€ (variabile per settore, geo, periodo)<br>
+          • <strong>Frequency L1:</strong> 12–16/mese (alta pressione, territorio vicino)<br>
+          • <strong>Frequency L2:</strong> 8–12/mese (pressione moderata, raggio ampio)<br>
+          • <strong>Audience size:</strong> da verificare su Meta Ads Manager — seleziona comuni + interessi B2B<br>
+          • <strong>Competitor forte:</strong> frequency Meta ridotta, compensata con Google Search/Maps
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section id="timeline">
+  <div class="wrap">
+    <div class="rx"><div class="s-label">08 — Quando</div></div>
+    <div class="rx d1"><h2 class="display">3 fasi.<br>Sequenza logica.</h2></div>
+    <div class="rx d2"><div class="callout"><strong>A cosa serve:</strong> sapere cosa fare prima, durante e dopo maggio. Ogni fase ha un obiettivo chiaro e azioni concrete verificabili. Non è un calendario rigido: è una sequenza di priorità che si adatta ai segnali ricevuti.</div></div>
+
+    <div class="tl">
+      <div class="tl-item rx d1">
+        <div class="tl-dot">1</div>
+        <div class="tl-card">
+          <div class="tl-phase" style="color:var(--blue2);">Fase 1 — Pre-lancio (4–6 settimane prima)</div>
+          <h3>Generare contatti aziende e fissare incontri</h3>
+          <div class="tl-actions">
+            <div class="tl-action" style="color:var(--blue2);"><span class="dot2"></span><span>Landing "Aziende" con 2 CTA chiare: "Richiedi proposta" e "Prenota incontro 15 min" — no form da 10 campi</span></div>
+            <div class="tl-action" style="color:var(--blue2);"><span class="dot2"></span><span>WhatsApp come canale rapido + Google Business Profile (creazione/verifica sede) con foto reali</span></div>
+            <div class="tl-action" style="color:var(--blue2);"><span class="dot2"></span><span>Meta geo + settori attivi · Radio 2 emittenti · OOH limitrofo · Google Search/Maps pronti</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="tl-item rx d2">
+        <div class="tl-dot">2</div>
+        <div class="tl-card">
+          <div class="tl-phase" style="color:var(--goldf);">Fase 2 — Maggio (evento + mese caldo)</div>
+          <h3>Trasformare visite in contatti utili</h3>
+          <div class="tl-actions">
+            <div class="tl-action" style="color:var(--goldf);"><span class="dot2"></span><span>Desk "Aziende" dedicato + form corto (5 campi max): tipo veicolo, uso, volume, formule interesse, contatto</span></div>
+            <div class="tl-action" style="color:var(--goldf);"><span class="dot2"></span><span>In sede: Transit / Transit Custom / Ranger esposto + Mobile Service spiegato con 3 esempi pratici (non slide)</span></div>
+            <div class="tl-action" style="color:var(--goldf);"><span class="dot2"></span><span>Risposta garantita entro 1 ora da ogni richiesta — questo è già differenziante rispetto ai competitor locali</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="tl-item rx d3">
+        <div class="tl-dot">3</div>
+        <div class="tl-card">
+          <div class="tl-phase" style="color:var(--green);">Fase 3 — Post-lancio (4 settimane dopo)</div>
+          <h3>Recuperare indecisi, consolidare e allargare</h3>
+          <div class="tl-actions">
+            <div class="tl-action" style="color:var(--green);"><span class="dot2"></span><span>Remarketing su chi ha visitato il sito, cliccato WhatsApp o richiesto indicazioni su Maps</span></div>
+            <div class="tl-action" style="color:var(--green);"><span class="dot2"></span><span>Contenuti "proof": cosa include il servizio, tempi reali, come funziona l'assistenza, prime recensioni</span></div>
+            <div class="tl-action" style="color:var(--green);"><span class="dot2"></span><span>Se L1 funziona → espansione graduale al Livello 2 con budget incrementale e messaggi adattati</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPETITORS -->
+<section class="s-alt" id="competitors">
+  <div class="wrap">
+    <div class="rx"><div class="s-label">09 — Panorama competitivo</div></div>
+    <div class="rx d1"><h2 class="display">Chi opera<br>già nella zona.</h2></div>
+    <div class="rx d2"><div class="callout"><strong>A cosa serve:</strong> non una lista, ma uno strumento operativo per capire dove differenziarsi e dove intensificare la pressione. I competitor con distanza &gt;7 km sono già un vantaggio competitivo per la prossimità. Il livello di minaccia indica dove adattare la strategia media.</div></div>
+
+    <div style="overflow-x:auto;" class="rx d2">
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th>Competitor</th>
+            <th>Distanza</th>
+            <th>Tipo</th>
+            <th>Come differenziarsi</th>
+            <th>Minaccia</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>The King Automotive<br><span style="color:var(--w3);font-size:.75rem;">Castello di Cisterna</span></td>
+            <td>Stessa città</td>
+            <td>Auto usate multibrand</td>
+            <td>Non Ford ufficiale, no gamma nuova, no NLT strutturato — lacuna che colmiamo completamente</td>
+            <td><span class="threat-high">● Alta</span></td>
+          </tr>
+          <tr>
+            <td>Autosomma Noleggio<br><span style="color:var(--w3);font-size:.75rem;">Somma Vesuviana</span></td>
+            <td>~6,8 km</td>
+            <td>Veicoli commerciali (dal 1978)</td>
+            <td>Possibile cross-promotion; oppure messaggio prossimità + ufficialità Ford + gamma completa</td>
+            <td><span class="threat-high">● Alta</span></td>
+          </tr>
+          <tr>
+            <td>Soci Cars Service<br><span style="color:var(--w3);font-size:.75rem;">Cercola</span></td>
+            <td>~7,3 km</td>
+            <td>Ford ufficiale, vendita + assistenza</td>
+            <td>Comunicazione digitale migliorabile; più lontana per chi abita a Est di Napoli — punto di forza geografico</td>
+            <td><span class="threat-mid">● Media</span></td>
+          </tr>
+          <tr>
+            <td>Tuccillo Raffaele<br><span style="color:var(--w3);font-size:.75rem;">Piazzolla di Nola</span></td>
+            <td>~9,1 km</td>
+            <td>Officina Ford + partner Leasys</td>
+            <td>Non vende vetture nuove; visibilità online limitata — noi copriamo l'intero ciclo, dalla firma alla manutenzione</td>
+            <td><span class="threat-mid">● Media</span></td>
+          </tr>
+          <tr>
+            <td>Ciaramella Motori<br><span style="color:var(--w3);font-size:.75rem;">Casoria</span></td>
+            <td>~10,8 km</td>
+            <td>Multibrand, noleggio breve</td>
+            <td>Distanza &gt;10 km; brand meno focalizzato — noi siamo Ford ufficiale con specializzazione B2B</td>
+            <td><span class="threat-low">● Bassa</span></td>
+          </tr>
+          <tr>
+            <td>Future Service<br><span style="color:var(--w3);font-size:.75rem;">Casoria</span></td>
+            <td>~9,4 km</td>
+            <td>Officina full-service</td>
+            <td>Solo service, non vende: competitor parziale solo sul post-vendita, non sulla firma contratti</td>
+            <td><span class="threat-low">● Bassa</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINALE -->
+<section id="cta">
+  <div class="wrap">
+    <div class="rx"><div class="s-label">10 — Prossimi passi</div></div>
+    <div class="rx d1"><h2 class="display">4 decisioni<br>che sbloccano tutto.</h2></div>
+    <div class="rx d2"><p class="s-desc">Non servono riunioni infinite. Bastano 4 risposte pratiche per far partire il piano. Ognuna ha impatto diretto sui messaggi, sul budget e sulla priorità operativa.</p></div>
+
+    <div class="cta-sec rx d2">
+      <div class="dec-g">
+        <div class="dec-card">
+          <div class="dec-n">1</div>
+          <h4>Priorità maggio: service o firma?</h4>
+          <p>Es. 70% service / 30% noleggio. La risposta determina dove concentrare il budget e quale messaggio mettere in prima posizione su ogni canale.</p>
+        </div>
+        <div class="dec-card">
+          <div class="dec-n">2</div>
+          <h4>Mobile Service: cosa promettiamo?</h4>
+          <p>Interventi coperti, area di copertura, giorni disponibili, modalità di prenotazione. Va trasformato in un "esempio concreto", non in uno slogan generico.</p>
+        </div>
+        <div class="dec-card">
+          <div class="dec-n">3</div>
+          <h4>Stock: cosa c'è in sede il giorno 1?</h4>
+          <p>Transit, Transit Custom, Ranger: disponibilità a pronta consegna al momento dell'apertura. La pronta consegna è leva di conversione, specialmente per PMI urgenti.</p>
+        </div>
+        <div class="dec-card">
+          <div class="dec-n">4</div>
+          <h4>Google Business Profile: chi lo attiva?</h4>
+          <p>Fondamentale per indicazioni Maps, chiamate dirette, messaggi WhatsApp. Serve un responsabile nominato + una data di attivazione precisa.</p>
+        </div>
+      </div>
+
+      <div style="margin-top:48px; text-align:left; max-width:700px; margin-left:auto; margin-right:auto;">
+        <h3 style="margin-bottom:20px; text-align:center;">📖 Glossario rapido</h3>
+        <div class="gloss-item"><div class="gloss-term">NLT / Noleggio lungo termine</div><div class="gloss-def">Rata mensile con servizi inclusi (manutenzione, assicurazione, sostitutiva, ecc.).</div></div>
+        <div class="gloss-item"><div class="gloss-term">Leasing</div><div class="gloss-def">Formula finanziaria per aziende, spesso con riscatto finale del veicolo.</div></div>
+        <div class="gloss-item"><div class="gloss-term">Veicoli commerciali</div><div class="gloss-def">Furgoni e mezzi da lavoro: Transit, Transit Custom, Ranger, Tourneo ecc.</div></div>
+        <div class="gloss-item"><div class="gloss-term">CPM</div><div class="gloss-def">Costo Per Mille: costo per ogni 1.000 visualizzazioni di un annuncio online.</div></div>
+        <div class="gloss-item"><div class="gloss-term">Remarketing / Richiamo</div><div class="gloss-def">Annunci che "seguono" chi ha già visitato il sito, cliccato un link o interagito.</div></div>
+        <div class="gloss-item"><div class="gloss-term">OOH</div><div class="gloss-def">Out-of-Home: cartelloni e affissioni pubblicitarie fisiche in spazi pubblici.</div></div>
+        <div class="gloss-item"><div class="gloss-term">TCO</div><div class="gloss-def">Total Cost of Ownership: costo totale di possesso del veicolo nel tempo (carburante, manutenzione, ecc.).</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Ford NRG — Strategia Lancio Maggio 2026 · Castello di Cisterna (NA)</p>
+  <p style="margin-top:6px;">Documento strategico riservato · Preparato da RiBrain Studio</p>
+</footer>
+
+<!-- ===================== SCRIPTS — ALL AT BOTTOM ===================== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+/* ===== LOADER ===== */
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const loader = document.getElementById('loader');
+    if (loader) {
+      loader.classList.add('exit');
+      setTimeout(() => { loader.style.display = 'none'; }, 750);
+    }
+  }, 1600);
+});
+
+/* ===== CURSOR ===== */
+const dot  = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+let mx=0, my=0, rx2=0, ry2=0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  dot.style.left = mx+'px'; dot.style.top = my+'px';
+});
+(function lerpCursor(){
+  rx2 += (mx - rx2) * .12;
+  ry2 += (my - ry2) * .12;
+  ring.style.left = rx2+'px'; ring.style.top = ry2+'px';
+  requestAnimationFrame(lerpCursor);
+})();
+
+/* ===== PROGRESS + NAV ACTIVE + SIDENAV ===== */
+const sections = Array.from(document.querySelectorAll('section[id]'));
+window.addEventListener('scroll', () => {
+  // progress bar
+  const p = document.getElementById('progress');
+  const s = window.scrollY, h = document.documentElement.scrollHeight - window.innerHeight;
+  p.style.width = (h > 0 ? s/h*100 : 0) + '%';
+
+  // nav active link
+  let current = '';
+  sections.forEach(sec => {
+    if (window.scrollY >= sec.offsetTop - 100) current = sec.id;
+  });
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+
+  // side nav dots
+  document.querySelectorAll('#sidenav .sn-dot').forEach(d => {
+    d.classList.toggle('active', d.dataset.sec === current);
+  });
+});
+
+// Side nav click scroll
+document.querySelectorAll('#sidenav .sn-item a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const dot2 = a.querySelector('.sn-dot');
+    if (!dot2) return;
+    const sec = document.getElementById(dot2.dataset.sec);
+    if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+/* ===== REVEAL ON SCROLL ===== */
+const ro = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('on');
+      activateDist(e.target);
+    }
+  });
+}, { threshold: .1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.rx').forEach(el => ro.observe(el));
+
+function activateDist(el) {
+  el.querySelectorAll('.dist-fill').forEach(f => {
+    const tw = getComputedStyle(f).getPropertyValue('--tw').trim();
+    if (tw) f.style.width = tw;
+  });
+}
+
+/* ===== COUNTER ANIMATION ===== */
+const coRo = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting && !e.target.dataset.counted) {
+      e.target.dataset.counted = '1';
+      const target = parseInt(e.target.dataset.count);
+      const suffix = e.target.dataset.suffix || '';
+      const dur = 1800, step = 16;
+      let current = 0;
+      const inc = target / (dur / step);
+      const t = setInterval(() => {
+        current = Math.min(current + inc, target);
+        e.target.textContent = Math.round(current) + suffix;
+        if (current >= target) clearInterval(t);
+      }, step);
+    }
+  });
+}, { threshold: .3 });
+document.querySelectorAll('[data-count]').forEach(el => coRo.observe(el));
+
+/* ===== PERSONA TABS ===== */
+function pTab(btn, prefix, tab) {
+  const card = btn.closest('.persona-card');
+  card.querySelectorAll('.p-tab-btn').forEach(b => b.classList.remove('active'));
+  card.querySelectorAll('.p-tab-content').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(prefix + '-' + tab).classList.add('active');
+}
+
+/* ===== MAP DATA ===== */
+const L1 = [
+  {n:"Acerra",lat:40.945,lng:14.372},{n:"Casalnuovo di Napoli",lat:40.912,lng:14.353},
+  {n:"Crispano",lat:40.951,lng:14.321},{n:"Frattaminore",lat:40.953,lng:14.273},
+  {n:"Afragola",lat:40.922,lng:14.310},{n:"Arzano",lat:40.911,lng:14.268},
+  {n:"Caivano",lat:40.959,lng:14.307},{n:"Cardito",lat:40.948,lng:14.298},
+  {n:"Casoria",lat:40.907,lng:14.290,comp:true},{n:"Frattamaggiore",lat:40.941,lng:14.276},
+  {n:"Grumo Nevano",lat:40.936,lng:14.266},{n:"Sant'Antimo",lat:40.942,lng:14.237},
+  {n:"Pomigliano d'Arco",lat:40.911,lng:14.395},{n:"Marigliano",lat:40.923,lng:14.457},
+  {n:"Brusciano",lat:40.922,lng:14.422},{n:"Nola",lat:40.926,lng:14.528,comp:true},
+  {n:"Saviano",lat:40.910,lng:14.509},{n:"Mariglianella",lat:40.926,lng:14.442},
+  {n:"Scisciano",lat:40.915,lng:14.481},{n:"Cimitile",lat:40.937,lng:14.529},
+  {n:"Comiziano",lat:40.925,lng:14.550},{n:"Camposano",lat:40.954,lng:14.533},
+  {n:"Tufino",lat:40.954,lng:14.566},{n:"Visciano",lat:40.925,lng:14.586},
+  {n:"Sant'Anastasia",lat:40.867,lng:14.402},{n:"Somma Vesuviana",lat:40.873,lng:14.437,comp:true},
+  {n:"Ottaviano",lat:40.851,lng:14.478},{n:"San Gennaro Vesuviano",lat:40.861,lng:14.533},
+  {n:"San Giuseppe Vesuviano",lat:40.836,lng:14.507},{n:"Terzigno",lat:40.806,lng:14.500},
+  {n:"Poggiomarino",lat:40.796,lng:14.540},{n:"Striano",lat:40.817,lng:14.576},
+  {n:"San Vitaliano",lat:40.922,lng:14.475},{n:"San Paolo Bel Sito",lat:40.915,lng:14.556}
+];
+const L2 = [
+  {n:"Pompei",lat:40.751,lng:14.499},{n:"Castellammare di Stabia",lat:40.694,lng:14.481},
+  {n:"Gragnano",lat:40.689,lng:14.522},{n:"Angri",lat:40.738,lng:14.570},
+  {n:"Nocera Inferiore",lat:40.746,lng:14.645},{n:"Nocera Superiore",lat:40.742,lng:14.675},
+  {n:"Pagani",lat:40.743,lng:14.614,comp:true},{n:"Scafati",lat:40.755,lng:14.529,comp:true},
+  {n:"Sarno",lat:40.813,lng:14.619},{n:"Avella",lat:40.959,lng:14.599},
+  {n:"Baiano",lat:40.954,lng:14.618},{n:"Monteforte Irpino",lat:40.890,lng:14.720},
+  {n:"Montoro",lat:40.829,lng:14.773},{n:"Solofra",lat:40.833,lng:14.842},
+  {n:"Mercogliano",lat:40.918,lng:14.743},{n:"Baronissi",lat:40.750,lng:14.771},
+  {n:"Cava de' Tirreni",lat:40.700,lng:14.706},{n:"Castel San Giorgio",lat:40.782,lng:14.696}
+];
+const COMPS = [
+  {n:"Soci Cars Service",loc:"Cercola",lat:40.862,lng:14.361,d:"~7,3 km"},
+  {n:"Autosomma Noleggio",loc:"Somma Vesuviana",lat:40.877,lng:14.440,d:"~6,8 km"},
+  {n:"Tuccillo Raffaele",loc:"Piazzolla di Nola",lat:40.935,lng:14.515,d:"~9,1 km"},
+  {n:"Ciaramella Motori",loc:"Casoria",lat:40.907,lng:14.295,d:"~10,8 km"},
+  {n:"Future Service",loc:"Casoria",lat:40.911,lng:14.294,d:"~9,4 km"},
+  {n:"The King Automotive",loc:"Castello di Cisterna",lat:40.906,lng:14.411,d:"stessa città"}
+];
+
+/* ===== MAP INIT ===== */
+let mapInstance, lyL1, lyL2, lyComp, lyHQ;
+function initMap() {
+  if (typeof L === 'undefined') { console.warn('Leaflet not loaded'); return; }
+  mapInstance = L.map('map', { scrollWheelZoom: false, zoomControl: true })
+    .setView([40.88, 14.44], 11);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 18
+  }).addTo(mapInstance);
+
+  const mkL1  = L.divIcon({className:'',html:'<div style="width:11px;height:11px;background:#0066FF;border-radius:50%;border:2px solid rgba(255,255,255,.9);"></div>',iconSize:[11,11],iconAnchor:[5,5]});
+  const mkL1c = L.divIcon({className:'',html:'<div style="width:13px;height:13px;background:#0066FF;border-radius:50%;border:2px solid #EF4444;"></div>',iconSize:[13,13],iconAnchor:[6,6]});
+  const mkL2  = L.divIcon({className:'',html:'<div style="width:9px;height:9px;background:#8B5CF6;border-radius:50%;border:2px solid rgba(255,255,255,.6);opacity:.8;"></div>',iconSize:[9,9],iconAnchor:[4,4]});
+  const mkL2c = L.divIcon({className:'',html:'<div style="width:11px;height:11px;background:#8B5CF6;border-radius:50%;border:2px solid #EF4444;opacity:.9;"></div>',iconSize:[11,11],iconAnchor:[5,5]});
+  const mkComp= L.divIcon({className:'',html:'<div style="width:14px;height:14px;background:#EF4444;border-radius:3px;border:2px solid rgba(255,255,255,.6);transform:rotate(45deg);"></div>',iconSize:[14,14],iconAnchor:[7,7]});
+  const mkHQ  = L.divIcon({className:'',html:'<div style="width:22px;height:22px;background:#F0BC3C;border-radius:50%;border:3px solid #fff;box-shadow:0 0 14px rgba(160,107,0,.5);"></div>',iconSize:[22,22],iconAnchor:[11,11]});
+
+  lyHQ = L.layerGroup([
+    L.marker([40.9083,14.4081],{icon:mkHQ})
+      .bindPopup('<strong style="color:#A06B00;">Ford NRG — Nuova Sede</strong><br>Castello di Cisterna (NA)<br><em style="font-size:11px;">Inaugurazione Maggio 2026</em>')
+  ]).addTo(mapInstance);
+
+  lyL1 = L.layerGroup(L1.map(c =>
+    L.marker([c.lat,c.lng],{icon:c.comp?mkL1c:mkL1})
+      .bindPopup(`<strong>${c.n}</strong><br><span style="color:#003478;">Livello 1 — Service + locale</span>${c.comp?'<br><span style="color:#C8202D;font-size:11px;">⚠ Competitor forte — Meta ridotto + differenziazione</span>':''}<br><em style="font-size:11px;">"Assistenza rapida, meno fermo veicolo"</em>`)
+  )).addTo(mapInstance);
+
+  lyL2 = L.layerGroup(L2.map(c =>
+    L.marker([c.lat,c.lng],{icon:c.comp?mkL2c:mkL2})
+      .bindPopup(`<strong>${c.n}</strong><br><span style="color:#4F22A0;">Livello 2 — Noleggio ampio</span>${c.comp?'<br><span style="color:#C8202D;font-size:11px;">⚠ Competitor forte</span>':''}<br><em style="font-size:11px;">"Condizioni chiare, soluzione su misura"</em>`)
+  )).addTo(mapInstance);
+
+  lyComp = L.layerGroup(COMPS.map(c =>
+    L.marker([c.lat,c.lng],{icon:mkComp})
+      .bindPopup(`<strong style="color:#C8202D;">${c.n}</strong><br>${c.loc} — ${c.d}`)
+  )).addTo(mapInstance);
+}
+
+function toggleLayer(name, el) {
+  const layers = {l1:lyL1, l2:lyL2, comp:lyComp, hq:lyHQ};
+  if (!layers[name] || !mapInstance) return;
+  el.classList.toggle('on');
+  if (mapInstance.hasLayer(layers[name])) mapInstance.removeLayer(layers[name]);
+  else mapInstance.addLayer(layers[name]);
+}
+
+/* ===== BUDGET CHART (donut with center label) ===== */
+let budgetChart;
+const BD = {
+  cons: { labels:['Meta Ads','Radio','OOH','Google'], data:[50,30,16,4], colors:['#003478','#A06B00','#1A6E3F','#4F22A0'] },
+  min:  { labels:['Meta L1','Radio','OOH','(L2 dopo)'], data:[60,25,15,0], colors:['#003478','#A06B00','#1A6E3F','#B0BED4'] }
+};
+
+// Custom center label plugin
+const centerLabelPlugin = {
+  id: 'centerLabel',
+  afterDraw(chart) {
+    if (chart.config.type !== 'doughnut') return;
+    const { ctx, chartArea: { left, right, top, bottom } } = chart;
+    const cx = (left + right) / 2;
+    const cy = (top + bottom) / 2;
+    const meta = chart.getDatasetMeta(0);
+    let total = 0;
+    chart.data.datasets[0].data.forEach(v => total += (v||0));
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = '800 1.6rem Inter, sans-serif';
+    ctx.fillStyle = '#F8FAFF';
+    ctx.fillText('100%', cx, cy - 10);
+    ctx.font = '400 .72rem Inter, sans-serif';
+    ctx.fillStyle = '#7A90B0';
+    ctx.fillText('ripartizione', cx, cy + 14);
+    ctx.restore();
+  }
+};
+
+function initChart() {
+  if (typeof Chart === 'undefined') return;
+  Chart.register(centerLabelPlugin);
+  const ctx = document.getElementById('budgetChart').getContext('2d');
+  budgetChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: BD.cons.labels,
+      datasets: [{ data: BD.cons.data, backgroundColor: BD.cons.colors, borderColor:'#FFFFFF', borderWidth:1.5, hoverOffset:6 }]
+    },
+    options: {
+      responsive: true, cutout: '68%',
+      plugins: {
+        legend: { position:'bottom', labels:{ color:'#8899BB', padding:18, font:{size:12,family:'Inter'} } },
+        tooltip: { backgroundColor:'#FFFFFF', titleColor:'#0D1F3C', bodyColor:'#3D5475', borderColor:'rgba(0,52,120,.12)', borderWidth:1, padding:12, callbacks:{ label: c => `${c.label}: ${c.parsed}%` } }
+      },
+      animation: { animateRotate:true, animateScale:true, duration:1400, easing:'easeOutQuart' }
+    }
+  });
+}
+
+function switchBudget(sc, el) {
+  document.querySelectorAll('.bsw-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  const d = BD[sc];
+  budgetChart.data.labels = d.labels;
+  budgetChart.data.datasets[0].data = d.data;
+  budgetChart.data.datasets[0].backgroundColor = d.colors;
+  budgetChart.update();
+  document.getElementById('bd-cons').style.display = sc==='cons' ? 'block' : 'none';
+  document.getElementById('bd-min').style.display  = sc==='min'  ? 'block' : 'none';
+}
+
+/* ===== FORMULA BAR CHART (mercato) ===== */
+function initFormulaChart() {
+  if (typeof Chart === 'undefined') return;
+  const ctx = document.getElementById('formulaChart');
+  if (!ctx) return;
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['NLT – Noleggio Lungo Termine', 'Leasing', 'Finanziamento', 'Acquisto diretto / altro'],
+      datasets: [{
+        data: [33, 29, 20, 18],
+        backgroundColor: ['#003478','#4F22A0','#A06B00','#B0BED4'],
+        borderRadius: 4,
+        barPercentage: 0.72,
+        categoryPercentage: 0.88,
+        borderSkipped: 'bottom'
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0D1225', titleColor:'#F8FAFF', bodyColor:'#8899BB',
+          borderColor:'rgba(0,52,120,.12)', borderWidth:1, padding:12,
+          callbacks: { label: c => `  ${c.parsed.x}% delle PMI` }
+        }
+      },
+      scales: {
+        x: {
+          min: 0, max: 45,
+          grid: { color:'rgba(0,52,120,.06)' },
+          ticks: { color:'#7A90B0', font:{size:11,family:'Inter'}, callback: v => v + '%' },
+          border: { color:'rgba(0,52,120,.08)' }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { color:'#3D5475', font:{size:12,family:'Inter'} },
+          border: { color:'transparent' }
+        }
+      },
+      animation: { duration:1500, easing:'easeOutCubic' }
+    }
+  });
+}
+
+/* ===== META CALCULATOR ===== */
+function fmtN(n) { return n.toLocaleString('it-IT'); }
+function fmtE(n) { return n.toLocaleString('it-IT', { minimumFractionDigits:0, maximumFractionDigits:0 }) + ' €'; }
+
+/* ── Guardrail definitions ── */
+const GUARDRAILS = {
+  reach: [
+    { max:10000,  level:'bad',  icon:'⛔', label:'Audience troppo piccola',  desc:'Copertura insufficiente per L1 — rischi di esaurire il pubblico in pochi giorni. Allarga la geo o aggiungi interessi.' },
+    { max:15000,  level:'warn', icon:'⚠️', label:'Al limite del range L1',   desc:'Puoi partire, ma considera di allargare leggermente la geo o i settori target per avere più margine.' },
+    { max:60000,  level:'ok',   icon:'✅', label:'Range ottimale',            desc:'Dimensione ideale per campagne B2B locali: copertura adeguata, CPM efficiente, frequenza sostenibile.' },
+    { max:80000,  level:'warn', icon:'⚠️', label:'Audience ampia',            desc:'Verifica che l'interesse B2B sia ben filtrato. Con audience larga rischi di raggiungere privati anziché aziende.' },
+    { max:100001, level:'bad',  icon:'⛔', label:'Troppo broad per il lancio', desc:'Audience troppo larga: il budget si diluisce su persone non qualificate. Restringi la geo o affina i filtri.' }
+  ],
+  freq: [
+    { max:6,  level:'bad',  icon:'⛔', label:'Frequenza troppo bassa',    desc:'Sotto la soglia di memorabilità. Il brand non viene ricordato e il costo per contatto aumenta inutilmente.' },
+    { max:8,  level:'warn', icon:'⚠️', label:'Sotto la soglia ideale',     desc:'Accettabile ma al limite. Considera di ridurre la reach per concentrare le esposizioni sulle persone giuste.' },
+    { max:16, level:'ok',   icon:'✅', label:'Finestra ideale',             desc:'8–16 esposizioni/mese: memorabilità alta, nessun rischio di saturazione. Il range perfetto per un lancio.' },
+    { max:18, level:'warn', icon:'⚠️', label:'Rischio ad fatigue',          desc:'Il target inizia a essere sovrapposto. Monitora il frequency cap su Ads Manager e tieni d'occhio il CTR.' },
+    { max:21, level:'bad',  icon:'⛔', label:'Ad fatigue elevato',           desc:'Frequenza eccessiva: il pubblico nasconde o ignora gli annunci, il CPM sale e l'efficacia crolla.' }
+  ],
+  cpm: [
+    { max:9,    level:'ok',   icon:'✅', label:'CPM efficiente',   desc:'Ottimo CPM per geo locale B2B. Ogni euro reso bene — puoi alzare reach o frequency senza preoccupazioni.' },
+    { max:12,   level:'warn', icon:'⚠️', label:'CPM nella norma',   desc:'Range standard per campagne B2B italiane, normale durante i periodi di lancio e stagioni di alta domanda.' },
+    { max:15.1, level:'bad',  icon:'⛔', label:'CPM elevato',        desc:'Il budget si esaurisce più velocemente del previsto. Valuta di ridurre reach o frequency per compensare.' }
+  ]
+};
+
+function getZone(type, value) {
+  for (const z of GUARDRAILS[type]) { if (value < z.max) return z; }
+  return GUARDRAILS[type][GUARDRAILS[type].length - 1];
+}
+
+function applyBadge(badgeId, txtId, slId, zone) {
+  const badge = document.getElementById(badgeId);
+  const txt   = document.getElementById(txtId);
+  const sl    = document.getElementById(slId);
+  const val   = document.getElementById(badgeId.replace('badge','val'));
+  if (!badge) return;
+  ['ok','warn','bad'].forEach(c => { badge.classList.remove(c); sl.classList.remove('zone-'+c); if(val) val.classList.remove(c); });
+  badge.classList.add(zone.level);
+  sl.classList.add('zone-'+zone.level);
+  if (val) val.classList.add(zone.level);
+  txt.textContent = zone.label;
+}
+
+/* Health banner messages */
+const HEALTH_MSGS = {
+  ok: {
+    icon:'✅',
+    title:'Parametri nella finestra ottimale per il lancio',
+    desc:'Reach, frequency e CPM sono allineati. La campagna può partire senza aggiustamenti.'
+  },
+  warn: {
+    icon:'⚠️',
+    title:'Parametri accettabili, ma attenzione ad alcune variabili',
+    desc:'Uno o più parametri sono ai margini del range consigliato. Leggi i dettagli qui sotto e valuta se aggiustare prima di lanciare.'
+  },
+  bad: {
+    icon:'⛔',
+    title:'Parametri fuori range — intervieni prima di lanciare',
+    desc:'Almeno un parametro è oltre i limiti consigliati per questo lancio. Rischi di sprecare budget o non raggiungere la memorabilità minima.'
+  }
+};
+
+function updateHealthBanner(reachZ, freqZ, cpmZ, budget) {
+  const banner = document.getElementById('mc-health');
+  const icon   = document.getElementById('mc-health-icon');
+  const title  = document.getElementById('mc-health-title');
+  const desc   = document.getElementById('mc-health-desc');
+  const tags   = document.getElementById('mc-health-tags');
+  if (!banner) return;
+
+  // Determine overall level
+  const levels = [reachZ.level, freqZ.level, cpmZ.level];
+  let overall = 'ok';
+  if (levels.includes('bad')) overall = 'bad';
+  else if (levels.includes('warn')) overall = 'warn';
+
+  // Budget guardrail
+  let budgetTag = '';
+  if (budget < 1500)       { overall = overall === 'ok' ? 'warn' : overall; budgetTag = '⚠️ Budget < 1.500€ — impatto limitato'; }
+  else if (budget > 8000)  { budgetTag = '⚠️ Budget > 8.000€ — verifica il ROI atteso'; }
+  else if (budget >= 3000) { budgetTag = '✅ Budget nel range di lancio consigliato'; }
+
+  const msg = HEALTH_MSGS[overall];
+  ['ok','warn','bad'].forEach(c => banner.classList.remove(c));
+  ['ok','warn','bad'].forEach(c => title.classList.remove(c));
+  banner.classList.add(overall);
+  title.classList.add(overall);
+  icon.textContent  = msg.icon;
+  title.textContent = msg.title;
+
+  // Build desc combining worst issues
+  const issues = [];
+  if (reachZ.level !== 'ok') issues.push('Reach: ' + reachZ.desc.split('.')[0]);
+  if (freqZ.level  !== 'ok') issues.push('Frequency: ' + freqZ.desc.split('.')[0]);
+  if (cpmZ.level   !== 'ok') issues.push('CPM: ' + cpmZ.desc.split('.')[0]);
+  desc.textContent = issues.length ? issues[0] : msg.desc;
+
+  // Tags
+  tags.innerHTML = '';
+  if (budgetTag) { const t = document.createElement('span'); t.className='mc-health-tag'; t.textContent=budgetTag; tags.appendChild(t); }
+  [['Reach',reachZ],['Freq',freqZ],['CPM',cpmZ]].forEach(([n,z]) => {
+    if (z.level !== 'ok') { const t = document.createElement('span'); t.className='mc-health-tag'; t.textContent=n+': '+z.label; tags.appendChild(t); }
+  });
+}
+
+function updateCalc() {
+  const reach = parseInt(document.getElementById('sl-reach').value);
+  const freq  = parseInt(document.getElementById('sl-freq').value);
+  const cpm   = parseFloat(document.getElementById('sl-cpm').value);
+
+  const impr   = reach * freq;
+  const budget = (impr / 1000) * cpm;
+
+  // Update displayed values
+  document.getElementById('val-reach').textContent = fmtN(reach);
+  document.getElementById('val-freq').textContent  = freq + '×';
+  document.getElementById('val-cpm').textContent   = cpm.toFixed(2).replace('.',',') + ' €';
+  document.getElementById('res-impr').textContent   = fmtN(impr);
+  document.getElementById('res-budget').textContent = fmtE(budget);
+  document.getElementById('res-cpc').textContent    = cpm.toFixed(3).replace('.',',') + ' €';
+
+  // Compute zones
+  const reachZ = getZone('reach', reach);
+  const freqZ  = getZone('freq',  freq);
+  const cpmZ   = getZone('cpm',   cpm);
+
+  // Apply badges + slider colors
+  applyBadge('badge-reach','badge-reach-txt','sl-reach', reachZ);
+  applyBadge('badge-freq', 'badge-freq-txt', 'sl-freq',  freqZ);
+  applyBadge('badge-cpm',  'badge-cpm-txt',  'sl-cpm',   cpmZ);
+
+  // Update health banner
+  updateHealthBanner(reachZ, freqZ, cpmZ, budget);
+
+  // Update slider fills
+  updateSliderFill('sl-reach', 5000, 100000);
+  updateSliderFill('sl-freq',  4,    20);
+  updateSliderFill('sl-cpm',   6,    15);
+}
+
+function updateSliderFill(id, min, max) {
+  const sl = document.getElementById(id);
+  if (!sl) return;
+  const pct = (sl.value - min) / (max - min) * 100;
+  sl.style.setProperty('--fill', pct + '%');
+}
+
+/* ===== INIT ALL ===== */
+document.addEventListener('DOMContentLoaded', () => {
+  initMap();
+  initChart();
+  // Lazy-init formula chart when canvas scrolls into view
+  const fCanvas = document.getElementById("formulaChart");
+  if (fCanvas) {
+    let fInited = false;
+    const fObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting && !fInited) { fInited = true; initFormulaChart(); fObs.disconnect(); }
+      });
+    }, { threshold: 0.3 });
+    fObs.observe(fCanvas);
+  }
+  updateCalc(); // initialize calculator display
+  updateSliderFill('sl-reach', 5000, 100000);
+  updateSliderFill('sl-freq',  4,    20);
+  updateSliderFill('sl-cpm',   6,    15);
+});
+</script>
+</body>
+</html>
