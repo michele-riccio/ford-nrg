@@ -963,8 +963,172 @@ footer { text-align:center; padding:40px; border-top:1px solid var(--border); fo
     <li><a href="#budget">Budget</a></li>
     <li><a href="#cta">Decisioni</a></li>
   </ul>
+  <button class="nav-pill" onclick="openManagerView()" style="margin-left:8px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;">
+    <span style="font-size:.8rem;">◆</span> Manager View
+  </button>
 
 </nav>
+
+<!-- ═══════════════════════════════════════════════
+     MANAGER VIEW — pannello laterale
+═══════════════════════════════════════════════ -->
+<div id="mv-overlay" onclick="closeManagerView()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9000;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;transition:opacity .3s;"></div>
+
+<div id="mv-panel" style="position:fixed;top:0;right:0;height:100vh;width:min(520px,100vw);background:#12192e;border-left:1px solid rgba(255,255,255,.08);z-index:9001;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;display:flex;flex-direction:column;">
+
+  <!-- header -->
+  <div style="position:sticky;top:0;z-index:10;background:#12192e;border-bottom:1px solid rgba(255,255,255,.08);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span style="color:#c0392b;font-size:.95rem;">◆</span>
+      <span style="font-size:.95rem;font-weight:800;color:#fff;letter-spacing:-.01em;">Manager View</span>
+    </div>
+    <button onclick="closeManagerView()" style="background:rgba(255,255,255,.08);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">×</button>
+  </div>
+
+  <!-- KPI strip -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid rgba(255,255,255,.06);">
+    <div style="padding:20px 16px;border-right:1px solid rgba(255,255,255,.06);">
+      <div style="font-size:.6rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">Apertura</div>
+      <div style="font-size:1.8rem;font-weight:900;color:#fff;line-height:1;">Mag</div>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:4px;">2026</div>
+    </div>
+    <div style="padding:20px 16px;border-right:1px solid rgba(255,255,255,.06);">
+      <div style="font-size:.6rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">Target</div>
+      <div style="font-size:1.8rem;font-weight:900;color:#fff;line-height:1;">~80k</div>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:4px;">Imprese nel raggio 30km</div>
+    </div>
+    <div style="padding:20px 16px;">
+      <div style="font-size:.6rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">Lead stimati</div>
+      <div style="font-size:1.8rem;font-weight:900;color:#00E5CC;line-height:1;">200–300</div>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:4px;">B2B lancio</div>
+    </div>
+  </div>
+
+  <!-- body cards -->
+  <div style="padding:20px 24px;display:flex;flex-direction:column;gap:16px;flex:1;">
+
+    <!-- obiettivo -->
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px;">
+      <div style="font-size:.6rem;font-weight:800;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px;">Opportunità</div>
+      <h3 style="font-size:1rem;font-weight:800;color:#fff;margin-bottom:10px;">Ford NRG apre a Castello di Cisterna</h3>
+      <p style="font-size:.8rem;color:rgba(255,255,255,.55);line-height:1.6;margin-bottom:10px;">Zona a bassa penetrazione Ford — primo mover advantage. Campagna B2B su PMI e P.IVA nel raggio 30 km con messaggi diversificati per profilo.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:9px;font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.5;"><span style="flex-shrink:0;">🎯</span><span><strong style="color:#fff;">Obiettivo:</strong> acquisire i primi clienti B2B nel mese di apertura, focus flotte e veicoli commerciali.</span></div>
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:9px;font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.5;"><span style="flex-shrink:0;">🔑</span><span><strong style="color:#fff;">Leva unica:</strong> Mobile Service Ford — nessun fermo, nessuno spostamento. Argomento che non ha nessun competitor locale.</span></div>
+      </div>
+      <a href="#intro" onclick="closeManagerView()" style="display:inline-block;margin-top:14px;font-size:.72rem;font-weight:700;color:#00E5CC;text-decoration:none;text-transform:uppercase;letter-spacing:.08em;">Vai alla sezione →</a>
+    </div>
+
+    <!-- target -->
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px;">
+      <div style="font-size:.6rem;font-weight:800;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px;">Chi stiamo raggiungendo</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+        <div style="border:1.5px solid rgba(0,229,204,.3);border-radius:10px;padding:12px;">
+          <div style="font-size:.62rem;font-weight:700;color:#00E5CC;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;">Profilo A · Prioritario</div>
+          <div style="font-size:.85rem;font-weight:700;color:#fff;margin-bottom:4px;">Titolare PMI</div>
+          <div style="font-size:.74rem;color:rgba(255,255,255,.5);line-height:1.4;">Decide direttamente. 1–5 veicoli. Cerca affidabilità e risparmio operativo.</div>
+        </div>
+        <div style="border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px;">
+          <div style="font-size:.62rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;">Profilo B</div>
+          <div style="font-size:.85rem;font-weight:700;color:#fff;margin-bottom:4px;">Resp. Flotta</div>
+          <div style="font-size:.74rem;color:rgba(255,255,255,.5);line-height:1.4;">Flotte medio-grandi. Processo strutturato. Priorità: TCO e affidabilità.</div>
+        </div>
+      </div>
+      <div style="background:rgba(255,200,0,.08);border:1px solid rgba(255,200,0,.2);border-radius:9px;padding:10px 12px;font-size:.74rem;color:rgba(255,220,80,.8);line-height:1.5;">📌 Settori prioritari: Edilizia · Logistica · Servizi alle imprese · Ho.Re.Ca · Agricoltura</div>
+      <a href="#personas" onclick="closeManagerView()" style="display:inline-block;margin-top:12px;font-size:.72rem;font-weight:700;color:#00E5CC;text-decoration:none;text-transform:uppercase;letter-spacing:.08em;">Vai alla sezione →</a>
+    </div>
+
+    <!-- budget media -->
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px;">
+      <div style="font-size:.6rem;font-weight:800;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px;">Investimento media / mese</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:16px;text-align:center;">
+          <div style="font-size:.62rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Investimento Minimo</div>
+          <div style="font-size:1.5rem;font-weight:900;color:#fff;">4.200€</div>
+          <div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-top:5px;line-height:1.4;">Solo L1 (10 km)<br>Meta + Google base</div>
+        </div>
+        <div style="background:linear-gradient(135deg,rgba(0,229,204,.1),rgba(22,102,193,.1));border:1.5px solid rgba(0,229,204,.3);border-radius:10px;padding:16px;text-align:center;position:relative;">
+          <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#00E5CC;color:#060f1e;font-size:.58rem;font-weight:800;padding:3px 10px;border-radius:20px;text-transform:uppercase;white-space:nowrap;">Consigliato</div>
+          <div style="font-size:.62rem;font-weight:700;color:#00E5CC;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Investimento Ideale</div>
+          <div style="font-size:1.5rem;font-weight:900;color:#00E5CC;">7.000€</div>
+          <div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-top:5px;line-height:1.4;">L1 + L2 full<br>Meta + Google + Remarketing</div>
+        </div>
+      </div>
+      <a href="#budget" onclick="closeManagerView()" style="display:inline-block;font-size:.72rem;font-weight:700;color:#00E5CC;text-decoration:none;text-transform:uppercase;letter-spacing:.08em;">Vai alla sezione →</a>
+    </div>
+
+    <!-- investimento agenzia -->
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px;">
+      <div style="font-size:.6rem;font-weight:800;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px;">Investimento produzione campagna (one-time)</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;">
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:12px;text-align:center;">
+          <div style="font-size:.58rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;margin-bottom:5px;">Minimo</div>
+          <div style="font-size:1.15rem;font-weight:900;color:#fff;">4.865€</div>
+          <div style="font-size:.65rem;color:rgba(255,255,255,.35);margin-top:4px;">122 ore</div>
+        </div>
+        <div style="background:linear-gradient(135deg,rgba(0,229,204,.1),rgba(22,102,193,.1));border:1.5px solid rgba(0,229,204,.3);border-radius:9px;padding:12px;text-align:center;">
+          <div style="font-size:.58rem;font-weight:700;color:#00E5CC;text-transform:uppercase;margin-bottom:5px;">✦ Medio</div>
+          <div style="font-size:1.15rem;font-weight:900;color:#00E5CC;">5.738€</div>
+          <div style="font-size:.65rem;color:rgba(255,255,255,.35);margin-top:4px;">143 ore</div>
+        </div>
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:12px;text-align:center;">
+          <div style="font-size:.58rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;margin-bottom:5px;">Massimo</div>
+          <div style="font-size:1.15rem;font-weight:900;color:#fff;">6.620€</div>
+          <div style="font-size:.65rem;color:rgba(255,255,255,.35);margin-top:4px;">165 ore</div>
+        </div>
+      </div>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.35);line-height:1.5;">IVA esclusa · 45€/h · Strategia &amp; planning inclusi e omaggiati</div>
+      <a href="#investimento" onclick="closeManagerView()" style="display:inline-block;margin-top:10px;font-size:.72rem;font-weight:700;color:#00E5CC;text-decoration:none;text-transform:uppercase;letter-spacing:.08em;">Vai alla sezione →</a>
+    </div>
+
+    <!-- 4 decisioni -->
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px;">
+      <div style="font-size:.6rem;font-weight:800;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.12em;margin-bottom:14px;">Le 4 decisioni che sbloccano tutto</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:9px;">
+          <div style="width:24px;height:24px;border-radius:50%;background:#003478;color:#fff;font-size:.7rem;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+          <div style="font-size:.78rem;color:rgba(255,255,255,.7);line-height:1.5;"><strong style="color:#fff;">Priorità maggio:</strong> service o firma? (es. 70/30)</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:9px;">
+          <div style="width:24px;height:24px;border-radius:50%;background:#003478;color:#fff;font-size:.7rem;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+          <div style="font-size:.78rem;color:rgba(255,255,255,.7);line-height:1.5;"><strong style="color:#fff;">Mobile Service:</strong> area, interventi, giorni disponibili</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:9px;">
+          <div style="width:24px;height:24px;border-radius:50%;background:#003478;color:#fff;font-size:.7rem;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+          <div style="font-size:.78rem;color:rgba(255,255,255,.7);line-height:1.5;"><strong style="color:#fff;">Stock giorno 1:</strong> Transit, Custom, Ranger a pronta consegna</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:9px;">
+          <div style="width:24px;height:24px;border-radius:50%;background:#003478;color:#fff;font-size:.7rem;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>
+          <div style="font-size:.78rem;color:rgba(255,255,255,.7);line-height:1.5;"><strong style="color:#fff;">Google Business:</strong> responsabile nominato + data attivazione</div>
+        </div>
+      </div>
+      <a href="#cta" onclick="closeManagerView()" style="display:inline-block;margin-top:14px;font-size:.72rem;font-weight:700;color:#00E5CC;text-decoration:none;text-transform:uppercase;letter-spacing:.08em;">Vai alla sezione →</a>
+    </div>
+
+  </div><!-- /body cards -->
+</div><!-- /mv-panel -->
+
+<script>
+function openManagerView(){
+  var ov=document.getElementById('mv-overlay');
+  var pn=document.getElementById('mv-panel');
+  ov.style.display='block';
+  requestAnimationFrame(function(){
+    ov.style.opacity='1';
+    pn.style.transform='translateX(0)';
+  });
+  document.body.style.overflow='hidden';
+}
+function closeManagerView(){
+  var ov=document.getElementById('mv-overlay');
+  var pn=document.getElementById('mv-panel');
+  ov.style.opacity='0';
+  pn.style.transform='translateX(100%)';
+  setTimeout(function(){ ov.style.display='none'; },350);
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeManagerView(); });
+</script>
 
 <!-- HERO -->
 <section class="hero" id="hero">
