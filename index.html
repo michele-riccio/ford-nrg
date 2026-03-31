@@ -728,6 +728,7 @@ footer { text-align:center; padding:40px; border-top:1px solid var(--border); fo
   .ch-pct { font-size:1.4rem; }
   .fasce { grid-template-columns:1fr !important; }
   .radio-g { gap:12px; }
+  #inv-fasce { grid-template-columns:1fr !important; }
 
   /* Budget */
   .budget-inner { gap:20px; }
@@ -810,6 +811,7 @@ footer { text-align:center; padding:40px; border-top:1px solid var(--border); fo
   <div class="sn-item"><a href="#media"     onclick="return false"><div class="sn-dot" data-sec="media"></div></a><div class="sn-tooltip">Media plan</div></div>
   <div class="sn-item"><a href="#radio"     onclick="return false"><div class="sn-dot" data-sec="radio"></div></a><div class="sn-tooltip">Piano Radio</div></div>
   <div class="sn-item"><a href="#budget"    onclick="return false"><div class="sn-dot" data-sec="budget"></div></a><div class="sn-tooltip">Budget</div></div>
+  <div class="sn-item"><a href="#investimento" onclick="return false"><div class="sn-dot" data-sec="investimento"></div></a><div class="sn-tooltip">Investimento</div></div>
   <div class="sn-item"><a href="#meta-dash" onclick="return false"><div class="sn-dot" data-sec="meta-dash"></div></a><div class="sn-tooltip">Calcolatore Meta</div></div>
   <div class="sn-item"><a href="#timeline"  onclick="return false"><div class="sn-dot" data-sec="timeline"></div></a><div class="sn-tooltip">Timeline</div></div>
   <div class="sn-item"><a href="#competitors" onclick="return false"><div class="sn-dot" data-sec="competitors"></div></a><div class="sn-tooltip">Competitor</div></div>
@@ -1626,6 +1628,137 @@ footer { text-align:center; padding:40px; border-top:1px solid var(--border); fo
         </tbody>
       </table>
     </div>
+  </div>
+</section>
+
+<!-- INVESTIMENTO PRODUZIONE -->
+<section id="investimento" style="background:linear-gradient(180deg,#060f1e 0%,#0a1628 100%);">
+  <div class="wrap">
+    <div class="rx"><div class="s-label">09b — Investimento agenzia</div></div>
+    <div class="rx d1"><h2 class="display">Quanto costa<br>mettere in moto tutto.</h2></div>
+    <div class="rx d2"><p class="s-desc">Tutto quello che serve per lanciare la campagna — creatività, tecnica, digital. La strategia e il planning sono già inclusi, omaggiati. I valori indicati sono investimenti one-time per il lancio, basati su tariffa oraria standard.</p></div>
+
+    <!-- Fasce investimento -->
+    <div class="rx d2" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:48px;" id="inv-fasce">
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px 24px;text-align:center;position:relative;">
+        <div style="font-size:.68rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;">Investimento Minimo</div>
+        <div style="font-size:2.6rem;font-weight:900;color:#fff;line-height:1;letter-spacing:-.03em;">4.865<span style="font-size:1.2rem;color:rgba(255,255,255,.5);">€</span></div>
+        <div style="font-size:.76rem;color:rgba(255,255,255,.4);margin-top:10px;line-height:1.5;">122 ore · produzione essenziale<br>Reel ridotti, 1 LP, setup base</div>
+      </div>
+      <div style="background:linear-gradient(135deg,rgba(0,229,204,.12) 0%,rgba(22,102,193,.12) 100%);border:2px solid rgba(0,229,204,.35);border-radius:16px;padding:28px 24px;text-align:center;position:relative;">
+        <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#00E5CC;color:#060f1e;font-size:.62rem;font-weight:800;padding:4px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;">Consigliato</div>
+        <div style="font-size:.68rem;font-weight:700;color:#00E5CC;text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;">Investimento Medio</div>
+        <div style="font-size:2.6rem;font-weight:900;color:#00E5CC;line-height:1;letter-spacing:-.03em;">5.738<span style="font-size:1.2rem;color:rgba(0,229,204,.5);">€</span></div>
+        <div style="font-size:.76rem;color:rgba(255,255,255,.5);margin-top:10px;line-height:1.5;">143 ore · produzione completa<br>Mix bilanciato, copertura full-funnel</div>
+      </div>
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px 24px;text-align:center;">
+        <div style="font-size:.68rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;">Investimento Massimo</div>
+        <div style="font-size:2.6rem;font-weight:900;color:#fff;line-height:1;letter-spacing:-.03em;">6.620<span style="font-size:1.2rem;color:rgba(255,255,255,.5);">€</span></div>
+        <div style="font-size:.76rem;color:rgba(255,255,255,.4);margin-top:10px;line-height:1.5;">165 ore · produzione premium<br>Reel professionali, LP avanzata, full setup</div>
+      </div>
+    </div>
+
+    <!-- breakdown per area -->
+    <div class="rx d3" style="margin-bottom:48px;">
+      <div style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin-bottom:20px;">Dettaglio per area</div>
+      <div style="display:grid;gap:10px;">
+
+        <!-- strategia -->
+        <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:16px;align-items:center;padding:16px 20px;background:rgba(0,229,204,.06);border:1px solid rgba(0,229,204,.15);border-radius:12px;">
+          <div>
+            <div style="font-size:.82rem;font-weight:700;color:#fff;">Strategia &amp; Planning</div>
+            <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:3px;">Piano lancio · Targeting · Brief creativo</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.68rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.06em;">Ore</div>
+            <div style="font-size:.95rem;font-weight:700;color:rgba(255,255,255,.5);">16</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.68rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.06em;">Investimento</div>
+            <div style="font-size:.95rem;font-weight:700;color:rgba(255,255,255,.4);text-decoration:line-through;">720€</div>
+          </div>
+          <div style="background:rgba(0,229,204,.15);border-radius:8px;padding:6px 12px;text-align:center;">
+            <div style="font-size:.7rem;font-weight:800;color:#00E5CC;">OMAGGIO ✓</div>
+          </div>
+        </div>
+
+        <!-- meta ads -->
+        <div style="display:grid;grid-template-columns:1fr auto auto;gap:16px;align-items:center;padding:16px 20px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;">
+          <div>
+            <div style="font-size:.82rem;font-weight:700;color:#fff;">Asset Meta Ads</div>
+            <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:3px;">Idea campagna · Copy · Visual · Reel video</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.68rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.06em;">Ore</div>
+            <div style="font-size:.95rem;font-weight:700;color:#CC44FF;">45–62</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.68rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.06em;">Investimento</div>
+            <div style="font-size:.95rem;font-weight:700;color:#CC44FF;">2.025–2.790€</div>
+          </div>
+        </div>
+
+        <!-- google ads -->
+        <div style="display:grid;grid-template-columns:1fr auto auto;gap:16px;align-items:center;padding:16px 20px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;">
+          <div>
+            <div style="font-size:.82rem;font-weight:700;color:#fff;">Asset Google Ads</div>
+            <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:3px;">Search · Display / Remarketing</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.68rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.06em;">Ore</div>
+            <div style="font-size:.95rem;font-weight:700;color:#1666C1;">28–40</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.68rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.06em;">Investimento</div>
+            <div style="font-size:.95rem;font-weight:700;color:#1666C1;">1.260–1.800€</div>
+          </div>
+        </div>
+
+        <!-- landing page -->
+        <div style="display:grid;grid-template-columns:1fr auto auto;gap:16px;align-items:center;padding:16px 20px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;">
+          <div>
+            <div style="font-size:.82rem;font-weight:700;color:#fff;">Landing Page</div>
+            <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:3px;">LP dedicata · Mobile · Integrazione form/CRM</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.68rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.06em;">Ore</div>
+            <div style="font-size:.95rem;font-weight:700;color:#00E5CC;">28–38</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.68rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.06em;">Investimento</div>
+            <div style="font-size:.95rem;font-weight:700;color:#00E5CC;">1.260–1.710€</div>
+          </div>
+        </div>
+
+        <!-- setup tecnico -->
+        <div style="display:grid;grid-template-columns:1fr auto auto;gap:16px;align-items:center;padding:16px 20px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;">
+          <div>
+            <div style="font-size:.82rem;font-weight:700;color:#fff;">Setup Tecnico</div>
+            <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:3px;">Pixel · GTM · UTM · Pubblici custom Meta</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.68rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.06em;">Ore</div>
+            <div style="font-size:.95rem;font-weight:700;color:rgba(255,255,255,.6);">7</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.68rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.06em;">Investimento</div>
+            <div style="font-size:.95rem;font-weight:700;color:rgba(255,255,255,.6);">320€</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- nota IVA + CTA preventivo -->
+    <div class="rx d3" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;padding:24px 28px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;">
+      <div>
+        <div style="font-size:.8rem;color:rgba(255,255,255,.5);line-height:1.6;">Valori indicativi <strong style="color:rgba(255,255,255,.7);">IVA esclusa</strong> · Tariffa oraria standard 45€/h · Strategia e planning inclusi e omaggiati<br>Budget media (Meta Ads, Google Ads) non incluso — vedi sezione Budget per i range consigliati.</div>
+      </div>
+      <a href="https://wa.me/390811964739?text=Ciao%2C%20ho%20visto%20il%20piano%20lancio%20Ford%20NRG%20e%20vorrei%20richiedere%20un%20preventivo%20per%20la%20campagna." target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;background:#00E5CC;color:#060f1e;font-size:.88rem;font-weight:800;padding:14px 28px;border-radius:12px;text-decoration:none;white-space:nowrap;flex-shrink:0;letter-spacing:.01em;">
+        <span style="font-size:1.1rem;">💬</span> Richiedi Preventivo
+      </a>
+    </div>
+
   </div>
 </section>
 
