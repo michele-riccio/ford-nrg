@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ford NRG — Executive Summary Lancio Maggio 2026</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Segoe UI',Arial,sans-serif;background:#f4f6fa;color:#1a2540;min-height:100vh;}
+
+  .header{background:linear-gradient(135deg,#003478 0%,#0a1e45 100%);color:#fff;padding:40px 48px 32px;}
+  .header-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:24px;}
+  .logo-area{display:flex;align-items:center;gap:14px;}
+  .ford-badge{background:#003478;border:2px solid rgba(255,255,255,.3);color:#fff;font-size:.75rem;font-weight:800;padding:6px 14px;border-radius:20px;letter-spacing:.08em;text-transform:uppercase;}
+  .rb-badge{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);font-size:.7rem;font-weight:600;padding:5px 12px;border-radius:20px;}
+  .doc-date{font-size:.75rem;color:rgba(255,255,255,.5);}
+  .header h1{font-size:2rem;font-weight:900;line-height:1.2;margin-bottom:8px;}
+  .header h1 span{color:#00E5CC;}
+  .header-sub{font-size:.95rem;color:rgba(255,255,255,.65);}
+  .confidential{display:inline-block;margin-top:16px;background:rgba(255,200,0,.15);border:1px solid rgba(255,200,0,.3);color:rgba(255,220,80,.9);font-size:.68rem;font-weight:700;padding:5px 12px;border-radius:6px;text-transform:uppercase;letter-spacing:.08em;}
+
+  .body{max-width:960px;margin:0 auto;padding:36px 24px 60px;}
+
+  /* KPI strip */
+  .kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:36px;}
+  .kpi-card{background:#fff;border-radius:12px;padding:20px 16px;text-align:center;box-shadow:0 1px 4px rgba(0,52,120,.08);}
+  .kpi-num{font-size:1.8rem;font-weight:900;color:#003478;line-height:1;}
+  .kpi-num.teal{color:#00b8a0;}
+  .kpi-num.purple{color:#7c3aed;}
+  .kpi-lbl{font-size:.68rem;color:#8090a8;margin-top:6px;text-transform:uppercase;letter-spacing:.07em;line-height:1.4;}
+
+  /* Section blocks */
+  .section{background:#fff;border-radius:14px;padding:28px 28px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,52,120,.07);}
+  .section-title{font-size:.65rem;font-weight:800;color:#003478;text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+  .section-title::before{content:'';display:block;width:20px;height:3px;background:#00E5CC;border-radius:2px;flex-shrink:0;}
+  h2.block-h{font-size:1.3rem;font-weight:800;color:#1a2540;margin-bottom:4px;}
+  p.block-p{font-size:.85rem;color:#5a6b85;line-height:1.6;}
+
+  /* 2 cols */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+
+  /* Obiettivi list */
+  .obj-list{display:flex;flex-direction:column;gap:10px;}
+  .obj-item{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:#f4f6fa;border-radius:10px;}
+  .obj-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+  .obj-text{font-size:.84rem;color:#1a2540;line-height:1.5;}
+  .obj-text strong{color:#003478;}
+
+  /* Target personas */
+  .persona-strip{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .persona-card{border:2px solid #e8edf5;border-radius:12px;padding:16px;}
+  .persona-card.primary{border-color:#003478;}
+  .persona-tag{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#003478;margin-bottom:6px;}
+  .persona-name{font-size:1rem;font-weight:800;color:#1a2540;margin-bottom:4px;}
+  .persona-desc{font-size:.78rem;color:#6b7a90;line-height:1.5;}
+
+  /* Canali media */
+  .canali{display:flex;flex-direction:column;gap:8px;}
+  .canale-row{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;align-items:center;padding:10px 14px;background:#f4f6fa;border-radius:9px;}
+  .canale-name{font-size:.83rem;font-weight:700;color:#1a2540;}
+  .canale-range{font-size:.83rem;font-weight:700;color:#003478;text-align:right;}
+  .canale-note{font-size:.72rem;color:#8090a8;text-align:right;}
+
+  /* Budget scenari */
+  .budget-scenari{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .scen-card{border-radius:12px;padding:20px;text-align:center;}
+  .scen-card.min{background:#f4f6fa;border:1px solid #dce5f0;}
+  .scen-card.cons{background:linear-gradient(135deg,#e8f8f6,#e0effc);border:2px solid #00b8a0;}
+  .scen-tag{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#6b7a90;margin-bottom:8px;}
+  .scen-card.cons .scen-tag{color:#00b8a0;}
+  .scen-num{font-size:1.8rem;font-weight:900;color:#1a2540;line-height:1;}
+  .scen-card.cons .scen-num{color:#003478;}
+  .scen-desc{font-size:.74rem;color:#8090a8;margin-top:8px;line-height:1.5;}
+
+  /* Investimento agenzia */
+  .inv-fasce{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+  .inv-card{border-radius:12px;padding:18px 16px;text-align:center;}
+  .inv-card.min{background:#f4f6fa;border:1px solid #dce5f0;}
+  .inv-card.med{background:linear-gradient(135deg,#e8f8f6,#e0effc);border:2px solid #00b8a0;}
+  .inv-card.max{background:#f4f6fa;border:1px solid #dce5f0;}
+  .inv-tag{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#8090a8;margin-bottom:8px;}
+  .inv-card.med .inv-tag{color:#00b8a0;}
+  .inv-num{font-size:1.5rem;font-weight:900;color:#1a2540;}
+  .inv-card.med .inv-num{color:#003478;}
+  .inv-sub{font-size:.7rem;color:#8090a8;margin-top:6px;line-height:1.4;}
+
+  /* Timeline */
+  .timeline{display:flex;gap:0;position:relative;}
+  .timeline::before{content:'';position:absolute;top:16px;left:16px;right:16px;height:2px;background:#dce5f0;z-index:0;}
+  .tl-step{flex:1;text-align:center;position:relative;z-index:1;}
+  .tl-dot{width:32px;height:32px;border-radius:50%;background:#fff;border:2px solid #003478;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:.7rem;font-weight:900;color:#003478;}
+  .tl-step.active .tl-dot{background:#003478;color:#fff;}
+  .tl-step.done .tl-dot{background:#00b8a0;border-color:#00b8a0;color:#fff;}
+  .tl-label{font-size:.7rem;font-weight:700;color:#1a2540;line-height:1.3;}
+  .tl-date{font-size:.65rem;color:#8090a8;margin-top:3px;}
+
+  /* Next steps */
+  .steps{display:flex;flex-direction:column;gap:10px;}
+  .step-row{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;border-radius:10px;border:1px solid #e8edf5;}
+  .step-n{width:28px;height:28px;border-radius:50%;background:#003478;color:#fff;font-size:.78rem;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .step-text h4{font-size:.85rem;font-weight:700;color:#1a2540;margin-bottom:2px;}
+  .step-text p{font-size:.76rem;color:#6b7a90;line-height:1.5;}
+
+  /* CTA bar */
+  .cta-bar{background:linear-gradient(135deg,#003478,#0a1e45);border-radius:14px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;margin-top:28px;}
+  .cta-bar-text h3{font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:4px;}
+  .cta-bar-text p{font-size:.8rem;color:rgba(255,255,255,.6);}
+  .cta-btn{display:inline-flex;align-items:center;gap:8px;background:#00E5CC;color:#003478;font-size:.88rem;font-weight:800;padding:14px 28px;border-radius:10px;text-decoration:none;white-space:nowrap;}
+
+  /* Note bene */
+  .nota{background:#fffbea;border:1px solid #fcd34d;border-radius:10px;padding:14px 18px;font-size:.78rem;color:#7c5e10;line-height:1.6;margin-top:16px;}
+
+  /* Footer */
+  footer{text-align:center;padding:24px;font-size:.72rem;color:#a0aec0;}
+
+  @media(max-width:700px){
+    .header{padding:24px 20px 20px;}
+    .header h1{font-size:1.4rem;}
+    .body{padding:20px 16px 40px;}
+    .kpi-strip,.two-col,.persona-strip,.budget-scenari,.inv-fasce,.timeline{grid-template-columns:1fr 1fr!important;}
+    .timeline{flex-wrap:wrap;gap:12px;}
+    .timeline::before{display:none;}
+    .cta-bar{flex-direction:column;text-align:center;}
+    .canale-row{grid-template-columns:1fr 1fr;}
+    .canale-note{display:none;}
+  }
+  @media(max-width:440px){
+    .kpi-strip,.inv-fasce{grid-template-columns:1fr 1fr!important;}
+    .persona-strip,.budget-scenari{grid-template-columns:1fr!important;}
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="logo-area">
+      <span class="ford-badge">Ford NRG</span>
+      <span class="rb-badge">RiBrain Studio</span>
+    </div>
+    <span class="doc-date">Lancio Maggio 2026 · Castello di Cisterna (NA)</span>
+  </div>
+  <h1>Piano di lancio B2B.<br><span>Executive Summary.</span></h1>
+  <p class="header-sub">Apertura nuova sede · Campagna targeting PMI e Partite IVA del territorio</p>
+  <span class="confidential">📄 Documento riservato</span>
+</div>
+
+<!-- BODY -->
+<div class="body">
+
+  <!-- KPI -->
+  <div class="kpi-strip">
+    <div class="kpi-card">
+      <div class="kpi-num">~80k</div>
+      <div class="kpi-lbl">Imprese target nel raggio 30 km</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-num teal">37k</div>
+      <div class="kpi-lbl">Target prioritario L1 (10 km)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-num">200–300</div>
+      <div class="kpi-lbl">Lead B2B stimati nel lancio</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-num purple">Mag '26</div>
+      <div class="kpi-lbl">Data obiettivo apertura</div>
+    </div>
+  </div>
+
+  <!-- Obiettivo + opportunità -->
+  <div class="section">
+    <div class="section-title">L'opportunità</div>
+    <div class="two-col">
+      <div>
+        <h2 class="block-h">Cosa stiamo facendo</h2>
+        <p class="block-p" style="margin-top:8px;">Ford NRG apre a Castello di Cisterna (NA) con un'offerta pensata per le aziende: noleggio lungo termine, veicoli commerciali e un Mobile Service che porta l'assistenza direttamente dove lavora il cliente.</p>
+        <p class="block-p" style="margin-top:10px;">La campagna lancio è costruita per raggiungere PMI e Partite IVA nel raggio di 30 km, con messaggi diversificati per profilo e livello di urgenza.</p>
+      </div>
+      <div>
+        <div class="obj-list">
+          <div class="obj-item">
+            <div class="obj-icon">🎯</div>
+            <div class="obj-text"><strong>Obiettivo principale:</strong> acquisire i primi clienti B2B nel mese di apertura, con focus su flotte e veicoli commerciali.</div>
+          </div>
+          <div class="obj-item">
+            <div class="obj-icon">📍</div>
+            <div class="obj-text"><strong>Vantaggio territoriale:</strong> zona a bassa penetrazione Ford — primo mover advantage chiaro.</div>
+          </div>
+          <div class="obj-item">
+            <div class="obj-icon">🔑</div>
+            <div class="obj-text"><strong>Leva differenziante:</strong> Mobile Service Ford — nessun fermo, nessuno spostamento. Argomento unico per le PMI operative.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Target -->
+  <div class="section">
+    <div class="section-title">Chi stiamo raggiungendo</div>
+    <div class="persona-strip">
+      <div class="persona-card primary">
+        <div class="persona-tag">Profilo A · Prioritario</div>
+        <div class="persona-name">Titolare / Imprenditore PMI</div>
+        <div class="persona-desc">Decide direttamente. Cerca affidabilità, risparmio operativo e nessuna sorpresa. Ha 1–5 veicoli, acquisto spesso per intuizione + convenienza concreta.</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-tag">Profilo B · Secondario</div>
+        <div class="persona-name">Responsabile Flotta</div>
+        <div class="persona-desc">Gestisce flotte medio-grandi. Processo d'acquisto strutturato. Priorità: TCO, rendicontazione e affidabilità del fornitore nel tempo.</div>
+      </div>
+    </div>
+    <div class="nota">📌 <strong>Settori prioritari nel raggio 30 km:</strong> Edilizia & Impiantistica · Logistica & Distribuzione · Servizi alle imprese · Ristorazione & Ho.Re.Ca · Agricoltura</div>
+  </div>
+
+  <!-- Canali media -->
+  <div class="section">
+    <div class="section-title">Come li raggiungiamo</div>
+    <div class="two-col">
+      <div>
+        <div class="canali">
+          <div class="canale-row" style="background:#e8f0fb;border-radius:9px;">
+            <div class="canale-name">🎯 Meta Ads (Facebook/Instagram)</div>
+            <div class="canale-range" style="color:#003478;">3.400–7.000€/m</div>
+            <div class="canale-note">Canale principale</div>
+          </div>
+          <div class="canale-row">
+            <div class="canale-name">🔍 Google Search + Maps</div>
+            <div class="canale-range">800–1.500€/m</div>
+            <div class="canale-note">Domanda attiva</div>
+          </div>
+          <div class="canale-row">
+            <div class="canale-name">📱 Remarketing / Display</div>
+            <div class="canale-range">Incluso Meta</div>
+            <div class="canale-note">Riacquisto audience</div>
+          </div>
+          <div class="canale-row">
+            <div class="canale-name">📻 Radio locale</div>
+            <div class="canale-range">+500–1.000€</div>
+            <div class="canale-note">Opzionale lancio</div>
+          </div>
+          <div class="canale-row">
+            <div class="canale-name">🗺️ OOH / Affissioni</div>
+            <div class="canale-range">Preventivo esterno</div>
+            <div class="canale-note">Notorietà locale</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="section-title" style="margin-bottom:12px;">Budget media mensile</div>
+        <div class="budget-scenari">
+          <div class="scen-card min">
+            <div class="scen-tag">Investimento minimo</div>
+            <div class="scen-num">4.200€</div>
+            <div class="scen-desc">Solo L1 (10 km) · Meta + Google · Copertura essenziale</div>
+          </div>
+          <div class="scen-card cons">
+            <div class="scen-tag">✦ Consigliato</div>
+            <div class="scen-num">7.000€</div>
+            <div class="scen-desc">L1 + L2 full · Meta + Google + Remarketing · Copertura completa</div>
+          </div>
+        </div>
+        <div class="nota" style="margin-top:12px;">💡 Regola: meglio dominare il territorio vicino (L1) che coprire tutto debolmente. Espandere a L2 solo dopo i primi segnali concreti.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Investimento agenzia -->
+  <div class="section">
+    <div class="section-title">Investimento produzione campagna (one-time)</div>
+    <p class="block-p" style="margin-bottom:20px;">Creatività, video, landing page e setup tecnico — tutto ciò che serve per mettere in moto la campagna. La strategia e il planning sono <strong>già completati e inclusi senza costo aggiuntivo</strong>.</p>
+    <div class="inv-fasce">
+      <div class="inv-card min">
+        <div class="inv-tag">Investimento minimo</div>
+        <div class="inv-num">4.865€</div>
+        <div class="inv-sub">122 ore · Produzione base<br>Reel ridotti, LP semplice</div>
+      </div>
+      <div class="inv-card med">
+        <div class="inv-tag">✦ Consigliato</div>
+        <div class="inv-num">5.738€</div>
+        <div class="inv-sub">143 ore · Produzione completa<br>Full-funnel, mix bilanciato</div>
+      </div>
+      <div class="inv-card max">
+        <div class="inv-tag">Investimento massimo</div>
+        <div class="inv-num">6.620€</div>
+        <div class="inv-sub">165 ore · Produzione premium<br>Reel professionali, LP avanzata</div>
+      </div>
+    </div>
+    <div class="nota">Valori IVA esclusa · Tariffa oraria 45€/h · Il budget media (Meta/Google) è separato e varia in base allo scenario scelto.</div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="section">
+    <div class="section-title">Timeline lancio</div>
+    <div class="timeline">
+      <div class="tl-step done">
+        <div class="tl-dot">✓</div>
+        <div class="tl-label">Strategia<br>& Brief</div>
+        <div class="tl-date">Completato</div>
+      </div>
+      <div class="tl-step active">
+        <div class="tl-dot">2</div>
+        <div class="tl-label">Approvazione<br>& kick-off</div>
+        <div class="tl-date">Apr 2026</div>
+      </div>
+      <div class="tl-step">
+        <div class="tl-dot">3</div>
+        <div class="tl-label">Produzione<br>creativa</div>
+        <div class="tl-date">Apr–Mag</div>
+      </div>
+      <div class="tl-step">
+        <div class="tl-dot">4</div>
+        <div class="tl-label">Setup tecnico<br>& go-live</div>
+        <div class="tl-date">Mag 2026</div>
+      </div>
+      <div class="tl-step">
+        <div class="tl-dot">5</div>
+        <div class="tl-label">Apertura &<br>prima campagna</div>
+        <div class="tl-date">Mag 2026</div>
+      </div>
+      <div class="tl-step">
+        <div class="tl-dot">6</div>
+        <div class="tl-label">Ottimizzazione<br>& scaling</div>
+        <div class="tl-date">Giu 2026</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Prossimi passi -->
+  <div class="section">
+    <div class="section-title">Le 4 decisioni che sbloccano tutto</div>
+    <div class="steps">
+      <div class="step-row">
+        <div class="step-n">1</div>
+        <div class="step-text">
+          <h4>Priorità maggio: service o firma?</h4>
+          <p>70% service / 30% noleggio, o viceversa. Determina il messaggio principale e dove concentrare il budget.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-n">2</div>
+        <div class="step-text">
+          <h4>Mobile Service: cosa promettiamo esattamente?</h4>
+          <p>Area coperta, interventi inclusi, giorni disponibili. Serve un "esempio concreto" da trasformare in messaggio.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-n">3</div>
+        <div class="step-text">
+          <h4>Stock disponibile il giorno 1?</h4>
+          <p>Transit, Transit Custom, Ranger a pronta consegna. La disponibilità immediata è leva di conversione per le PMI.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-n">4</div>
+        <div class="step-text">
+          <h4>Google Business Profile: chi lo attiva e quando?</h4>
+          <p>Fondamentale per Maps, chiamate e messaggi WhatsApp diretti. Serve un responsabile nominato + data precisa.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-bar">
+    <div class="cta-bar-text">
+      <h3>Pronto a far partire il lancio?</h3>
+      <p>Scrivi a RiBrain Studio per avviare la produzione della campagna.</p>
+    </div>
+    <a class="cta-btn" href="https://wa.me/390811964739?text=Ciao%2C%20ho%20letto%20il%20piano%20lancio%20Ford%20NRG%20e%20vorrei%20procedere%20con%20il%20preventivo." target="_blank" rel="noopener">
+      💬 Richiedi Preventivo
+    </a>
+  </div>
+
+</div>
+
+<footer>
+  Ford NRG · Strategia Lancio Maggio 2026 · Castello di Cisterna (NA)<br>
+  Documento riservato — Preparato da RiBrain Studio · ribrainstudio.com
+</footer>
+
+</body>
+</html>
