@@ -963,7 +963,7 @@ footer { text-align:center; padding:40px; border-top:1px solid var(--border); fo
     <li><a href="#budget">Budget</a></li>
     <li><a href="#cta">Decisioni</a></li>
   </ul>
-  <a href="FordNRG_PianoMedia.html" target="_blank" rel="noopener" class="nav-pill" style="margin-left:8px;display:flex;align-items:center;gap:6px;white-space:nowrap;text-decoration:none;">
+  <a href="FordNRG_PianoMedia.html" onclick="pageFade(event,this.href)" class="nav-pill" style="margin-left:8px;display:flex;align-items:center;gap:6px;white-space:nowrap;text-decoration:none;">
     <span style="font-size:.8rem;">📅</span> Piano Media
   </a>
   <button class="nav-pill" onclick="openManagerView()" style="margin-left:6px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;">
@@ -1982,10 +1982,16 @@ document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeManag
       setTimeout(function(){ loader.style.display = 'none'; }, 750);
     }
   }
-  // Failsafe: always dismiss after 2.8s no matter what
-  setTimeout(dismissLoader, 2800);
-  // Fast path: dismiss 1.2s after full load
-  window.addEventListener('load', function(){ setTimeout(dismissLoader, 1200); });
+  // Skip loader instantly when returning from an internal page (PianoMedia, ManagerSummary, etc.)
+  if (sessionStorage.getItem('ribrain_internal_nav')) {
+    sessionStorage.removeItem('ribrain_internal_nav');
+    dismissLoader();
+  } else {
+    // Failsafe: always dismiss after 2.8s no matter what
+    setTimeout(dismissLoader, 2800);
+    // Fast path: dismiss 1.2s after full load
+    window.addEventListener('load', function(){ setTimeout(dismissLoader, 1200); });
+  }
 })();
 </script>
 
@@ -2455,6 +2461,23 @@ document.addEventListener('DOMContentLoaded', () => {
   updateSliderFill('sl-freq',  4,    20);
   updateSliderFill('sl-cpm',   6,    15);
 });
+</script>
+
+<style>
+@keyframes pgFadeIn  { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+@keyframes pgFadeOut { from { opacity:1; transform:translateY(0); }    to { opacity:0; transform:translateY(-8px); } }
+body.page-out { animation: pgFadeOut .28s ease forwards; pointer-events:none; }
+body { animation: pgFadeIn .4s ease both; }
+</style>
+<script>
+function pageFade(e, url) {
+  e.preventDefault();
+  document.body.classList.add('page-out');
+  setTimeout(function(){
+    sessionStorage.setItem('ribrain_internal_nav', '1');
+    window.location.href = url;
+  }, 290);
+}
 </script>
 </body>
 </html>
