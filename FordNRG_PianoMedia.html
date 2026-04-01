@@ -171,18 +171,39 @@ footer{padding:24px 32px;text-align:center;border-top:1px solid var(--border);fo
       <span class="badge badge-ford">Ford NRG · Castello di Cisterna</span>
       <span class="badge badge-doc">Piano Media Lancio 2026</span>
     </div>
-    <a href="index.html" style="display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.75);font-size:.72rem;font-weight:600;padding:7px 14px;border-radius:20px;text-decoration:none;transition:.2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">
-      ← Piano di Lancio
-    </a>
+<div style="display:flex;align-items:center;gap:14px;">
+      <a href="index.html" style="display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.75);font-size:.72rem;font-weight:600;padding:7px 14px;border-radius:20px;text-decoration:none;transition:.2s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">
+        ← Piano di Lancio
+      </a>
+      <div style="display:flex;align-items:center;gap:9px;font-size:.68rem;white-space:nowrap;">
+        <span id="pm-label-off" style="color:rgba(255,255,255,.75);font-weight:700;">Ottimizzato · 18k</span>
+        <label style="position:relative;width:42px;height:24px;flex-shrink:0;cursor:pointer;">
+          <input type="checkbox" id="pm-toggle" onchange="togglePlan(this.checked)" style="opacity:0;width:0;height:0;position:absolute;">
+          <span id="pm-slider" style="position:absolute;inset:0;background:rgba(255,255,255,.15);border-radius:12px;transition:.25s;"></span>
+          <span id="pm-knob" style="position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.25s;"></span>
+        </label>
+        <span id="pm-label-on" style="color:rgba(255,255,255,.4);font-weight:600;">Piano Completo · 27k</span>
+      </div>
+    </div>
   </div>
   <h1>Flight Plan.<br><span>1 Maggio — 30 Giugno 2026.</span></h1>
   <p class="hd-sub">Pianificazione media integrata · 9 settimane · 5 canali · Pre-lancio + Lancio + Inaugurazione</p>
   <div class="hd-meta">
     <div class="hd-stat"><div class="hd-stat-n">9</div><div class="hd-stat-l">Settimane di campagna</div></div>
-    <div class="hd-stat"><div class="hd-stat-n">5</div><div class="hd-stat-l">Canali attivi</div></div>
-    <div class="hd-stat"><div class="hd-stat-n" style="color:#00E5CC;">~26.700€</div><div class="hd-stat-l">Investimento media totale</div></div>
+    <div class="hd-stat"><div class="hd-stat-n" id="pm-v-canali">4</div><div class="hd-stat-l">Canali attivi</div></div>
+    <div class="hd-stat"><div class="hd-stat-n" style="color:#00E5CC;" id="pm-v-invest">~18.000€</div><div class="hd-stat-l">Investimento media totale</div></div>
     <div class="hd-stat"><div class="hd-stat-n">3</div><div class="hd-stat-l">Fasi operative</div></div>
   </div>
+  <div id="pm-opt-banner" style="margin-top:16px;background:rgba(0,229,204,.07);border:1px solid rgba(0,229,204,.18);border-radius:12px;padding:14px 20px;">
+    <div style="font-size:.63rem;font-weight:800;color:#00E5CC;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">✂️ Cosa abbiamo ottimizzato — senza rompere la campagna</div>
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-size:.75rem;color:rgba(255,255,255,.7);">❌ <strong>Radio Punto Nuovo eliminata</strong> — a budget ridotto due radio diventano due voci deboli. Radio Marte copre il territorio.</div>
+      <div style="font-size:.75rem;color:rgba(255,255,255,.7);">📉 <strong>Meta: 10k → 8k</strong> — ridotto ma sopra la soglia minima di frequenza efficace per B2B. Inaugurazione invariata.</div>
+      <div style="font-size:.75rem;color:rgba(255,255,255,.7);">📉 <strong>Radio Marte: 5.8k → 4.5k</strong> — spot ridotti ~20% in pre-lancio. L'inaugurazione a 8 spot/g non si tocca.</div>
+      <div style="font-size:.75rem;color:rgba(255,255,255,.7);">📉 <strong>OOH: 3 → 2 impianti</strong> — si mantengono SS7BIS (zona Nola) e SP1 Cisterna sede. Si taglia Via Circumvallazione.</div>
+    </div>
+  </div>
+</div>
 </div>
 
 <!-- FASI -->
@@ -341,15 +362,15 @@ footer{padding:24px 32px;text-align:center;border-top:1px solid var(--border);fo
         <!-- BUDGET ROW -->
         <tr>
           <td class="ch-name" style="font-size:.7rem;color:var(--teal);background:#0a1220;">💶 Invest./settimana<span class="ch-sub">stima progressiva</span></td>
-          <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.4);">~800€</span></td>
-          <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.55);">~2.000€</span></td>
-          <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.65);">~3.200€</span></td>
-          <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.75);">~4.900€</span></td>
-          <td style="background:#0a1220;text-align:center;border-left:2px solid rgba(245,166,35,.3);"><span style="font-size:.72rem;font-weight:700;color:var(--gold);">~3.000€</span></td>
-          <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:var(--gold);">~3.100€</span></td>
-          <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:var(--gold);">~3.000€</span></td>
-          <td style="background:#0a1220;text-align:center;border-left:2px solid rgba(0,229,204,.3);"><span style="font-size:.72rem;font-weight:700;color:var(--teal);">~3.600€</span></td>
-          <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:var(--teal);">~3.100€</span></td>
+          <td style="background:#0a1220;text-align:center;"><span id="pm-v-w1" style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.4);">~600€</span></td>
+          <td style="background:#0a1220;text-align:center;"><span id="pm-v-w2" style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.55);">~1.350€</span></td>
+          <td style="background:#0a1220;text-align:center;"><span id="pm-v-w3" style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.65);">~2.350€</span></td>
+          <td style="background:#0a1220;text-align:center;"><span id="pm-v-w4" style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.75);">~3.000€</span></td>
+          <td style="background:#0a1220;text-align:center;border-left:2px solid rgba(245,166,35,.3);"><span id="pm-v-w5" style="font-size:.72rem;font-weight:700;color:var(--gold);">~2.400€</span></td>
+          <td style="background:#0a1220;text-align:center;"><span id="pm-v-w6" style="font-size:.72rem;font-weight:700;color:var(--gold);">~2.450€</span></td>
+          <td style="background:#0a1220;text-align:center;"><span id="pm-v-w7" style="font-size:.72rem;font-weight:700;color:var(--gold);">~2.400€</span></td>
+          <td style="background:#0a1220;text-align:center;border-left:2px solid rgba(0,229,204,.3);"><span id="pm-v-w8" style="font-size:.72rem;font-weight:700;color:var(--teal);">~1.950€</span></td>
+          <td style="background:#0a1220;text-align:center;"><span id="pm-v-w9" style="font-size:.72rem;font-weight:700;color:var(--teal);">~1.500€</span></td>
         </tr>
 
       </tbody>
@@ -383,26 +404,26 @@ footer{padding:24px 32px;text-align:center;border-top:1px solid var(--border);fo
       <tbody>
         <tr>
           <td><span class="ch-pill" style="background:var(--c-meta);"></span>Meta Ads</td>
-          <td>4.500 €</td>
-          <td>5.500 €</td>
-          <td>10.000 €</td>
-          <td style="font-size:.73rem;color:var(--w3);text-align:left;">Ramp-up: 800→1.200→1.500€/sett. Giugno: 1.200–1.500€/sett. + boost inaugurazione</td>
+          <td id="pm-v-meta-mag">3.500 €</td>
+          <td id="pm-v-meta-giu">4.500 €</td>
+          <td id="pm-v-meta-tot">8.000 €</td>
+          <td style="font-size:.73rem;color:var(--w3);text-align:left;"><span id="pm-v-meta-note">Ramp-up ridotto: 600→1.000→1.300€/sett. Inaugurazione invariata.</span></td>
         </tr>
         <tr>
           <td><span class="ch-pill" style="background:var(--c-google);"></span>Google Search + Maps</td>
-          <td>800 €</td>
-          <td>1.200 €</td>
-          <td>2.000 €</td>
+          <td id="pm-v-goog-mag">600 €</td>
+          <td id="pm-v-goog-giu">900 €</td>
+          <td id="pm-v-goog-tot">1.500 €</td>
           <td style="font-size:.73rem;color:var(--w3);text-align:left;">CPC brand: 0,40–0,80€. CPC veicoli commerciali Napoli: 1,20–2,20€. Maps PIN sponsorizzato incluso</td>
         </tr>
         <tr>
           <td><span class="ch-pill" style="background:var(--c-marte);"></span>Radio Marte</td>
-          <td>2.400 €</td>
-          <td>3.400 €</td>
-          <td>5.800 €</td>
-          <td style="font-size:.73rem;color:var(--w3);text-align:left;">Stima pacchetto: ~€65/spot medio con volume disc. Maggio: 36 spot/sett (W2–W4). Giugno: 42→56 spot/sett. Spot 20"–30"</td>
+          <td id="pm-v-marte-mag">1.800 €</td>
+          <td id="pm-v-marte-giu">2.700 €</td>
+          <td id="pm-v-marte-tot">4.500 €</td>
+          <td style="font-size:.73rem;color:var(--w3);text-align:left;"><span id="pm-v-marte-note">Spot ridotti ~20% in pre-lancio. Inaugurazione (8 spot/g) invariata.</span></td>
         </tr>
-        <tr>
+        <tr class="pm-pnuovo-row" style="display:none;">
           <td><span class="ch-pill" style="background:var(--c-pnuovo);"></span>Radio Punto Nuovo</td>
           <td>1.200 €</td>
           <td>2.200 €</td>
@@ -410,17 +431,17 @@ footer{padding:24px 32px;text-align:center;border-top:1px solid var(--border);fo
           <td style="font-size:.73rem;color:var(--w3);text-align:left;">Entra in W3. ~€40/spot medio. Focus Morning Drive e fascia sportiva. Stima da listino regionale Campania</td>
         </tr>
         <tr>
-          <td><span class="ch-pill" style="background:var(--c-ooh);"></span>OOH · 3 impianti</td>
-          <td>2.000 €</td>
-          <td>3.500 €</td>
-          <td>5.500 €</td>
-          <td style="font-size:.73rem;color:var(--w3);text-align:left;">Entra in W3. 2 periodi × 2 settimane a maggio, 3 periodi a giugno. €350–650/impianto per 2 settimane area Nola/Caserta. Vedi sezione posizioni</td>
+          <td><span class="ch-pill" style="background:var(--c-ooh);"></span><span id="pm-v-ooh-label">OOH · 2 impianti</span></td>
+          <td id="pm-v-ooh-mag">1.500 €</td>
+          <td id="pm-v-ooh-giu">2.500 €</td>
+          <td id="pm-v-ooh-tot">4.000 €</td>
+          <td style="font-size:.73rem;color:var(--w3);text-align:left;"><span id="pm-v-ooh-note">SS7BIS (zona ind. Nola) + SP1 Cisterna sede. Via Circumvallazione esclusa.</span></td>
         </tr>
         <tr style="font-weight:800;">
           <td>TOTALE INVESTIMENTO MEDIA</td>
-          <td>10.900 €</td>
-          <td>15.800 €</td>
-          <td>26.700 €</td>
+          <td id="pm-v-tot-mag">7.400 €</td>
+          <td id="pm-v-tot-giu">10.600 €</td>
+          <td id="pm-v-tot-tot">18.000 €</td>
           <td style="font-size:.73rem;color:var(--teal);text-align:left;">IVA esclusa · Budget media puro, non include fee agenzia e produzione</td>
         </tr>
       </tbody>
@@ -430,15 +451,15 @@ footer{padding:24px 32px;text-align:center;border-top:1px solid var(--border);fo
   <div class="total-box">
     <div class="total-left">
       <h3>Investimento media totale</h3>
-      <div class="total-num">26.700 €</div>
-      <div class="total-range">Range realistico: 24.000 – 29.500 € (±10% su tariffe radio/OOH)</div>
+      <div class="total-num" id="pm-v-box-total">18.000 €</div>
+      <div class="total-range"><span id="pm-v-box-range">Soglia minima ~16.000 € · questo piano ha margine di sicurezza</span></div>
     </div>
     <div class="total-right">
-      <div class="total-row"><span>Digital (Meta + Google)</span><strong>12.000 € · 45%</strong></div>
-      <div class="total-row"><span>Radio (Marte + P.Nuovo)</span><strong>9.200 € · 34%</strong></div>
-      <div class="total-row"><span>OOH (3 impianti)</span><strong>5.500 € · 21%</strong></div>
+      <div class="total-row"><span>Digital (Meta + Google)</span><strong id="pm-v-dig-val">9.500 € · 53%</strong></div>
+      <div class="total-row"><span id="pm-v-radio-label">Radio (Marte)</span><strong id="pm-v-radio-val">4.500 € · 25%</strong></div>
+      <div class="total-row"><span id="pm-v-ooh-box-label">OOH (2 impianti)</span><strong id="pm-v-ooh-box-val">4.000 € · 22%</strong></div>
       <div class="total-row" style="border-top:1px solid rgba(255,255,255,.1);padding-top:8px;margin-top:4px;"><span>Durata campagna</span><strong>9 settimane</strong></div>
-      <div class="total-row"><span>Media per settimana</span><strong>~2.967 €</strong></div>
+      <div class="total-row"><span>Media per settimana</span><strong id="pm-v-sett">~2.000 €</strong></div>
     </div>
   </div>
 
@@ -513,7 +534,7 @@ footer{padding:24px 32px;text-align:center;border-top:1px solid var(--border);fo
       <div class="r-row"><span>Costo/spot effettivo (pacchetto)</span><span class="r-val">~25–30 € con disc.</span></div>
       <div class="r-row"><span>Investimento stimato 2 mesi</span><span class="r-val">5.800 €</span></div>
     </div>
-    <div class="radio-card">
+    <div class="radio-card pm-pnuovo-row" style="display:none;">
       <div class="r-name">📻 Radio Punto Nuovo</div>
       <div class="r-sub">Priorità alta · ~40 trasmettitori · Talk + Sport</div>
       <div class="r-row"><span>Inizio flight</span><span class="r-val">W3 (12 maggio)</span></div>
@@ -575,18 +596,75 @@ footer{padding:24px 32px;text-align:center;border-top:1px solid var(--border);fo
 
 <style>
 @keyframes pgFadeIn  { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-@keyframes pgFadeOut { from { opacity:1; transform:translateY(0); }    to { opacity:0; transform:translateY(-8px); } }
-body.page-out { animation: pgFadeOut .28s ease forwards; pointer-events:none; }
 body { animation: pgFadeIn .4s ease both; }
 </style>
 <script>
-function pageFade(e, url) {
-  e.preventDefault();
-  document.body.classList.add('page-out');
-  setTimeout(function(){
-    sessionStorage.setItem('ribrain_internal_nav', '1');
-    window.location.href = url;
-  }, 290);
+/* ── PLAN TOGGLE ── */
+var PM = {
+  opt: {
+    invest:'~18.000€', canali:'4',
+    w1:'~600€', w2:'~1.350€', w3:'~2.350€', w4:'~3.000€',
+    w5:'~2.400€', w6:'~2.450€', w7:'~2.400€', w8:'~1.950€', w9:'~1.500€',
+    'meta-mag':'3.500 €','meta-giu':'4.500 €','meta-tot':'8.000 €',
+    'meta-note':'Ramp-up ridotto: 600→1.000→1.300€/sett. Inaugurazione invariata.',
+    'goog-mag':'600 €','goog-giu':'900 €','goog-tot':'1.500 €',
+    'marte-mag':'1.800 €','marte-giu':'2.700 €','marte-tot':'4.500 €',
+    'marte-note':'Spot ridotti ~20% in pre-lancio. Inaugurazione (8 spot/g) invariata.',
+    'ooh-label':'OOH · 2 impianti','ooh-mag':'1.500 €','ooh-giu':'2.500 €','ooh-tot':'4.000 €',
+    'ooh-note':'SS7BIS (zona ind. Nola) + SP1 Cisterna sede. Via Circumvallazione esclusa.',
+    'tot-mag':'7.400 €','tot-giu':'10.600 €','tot-tot':'18.000 €',
+    'box-total':'18.000 €',
+    'box-range':'Soglia minima ~16.000 € · questo piano ha margine di sicurezza',
+    'dig-val':'9.500 € · 53%','radio-label':'Radio (Marte)','radio-val':'4.500 € · 25%',
+    'ooh-box-label':'OOH (2 impianti)','ooh-box-val':'4.000 € · 22%',sett:'~2.000 €',
+    pnuovo:false
+  },
+  full: {
+    invest:'~26.700€', canali:'5',
+    w1:'~800€',w2:'~2.000€',w3:'~3.200€',w4:'~4.900€',
+    w5:'~3.000€',w6:'~3.100€',w7:'~3.000€',w8:'~3.600€',w9:'~3.100€',
+    'meta-mag':'4.500 €','meta-giu':'5.500 €','meta-tot':'10.000 €',
+    'meta-note':'Ramp-up: 800→1.200→1.500€/sett. + boost inaugurazione.',
+    'goog-mag':'800 €','goog-giu':'1.200 €','goog-tot':'2.000 €',
+    'marte-mag':'2.400 €','marte-giu':'3.400 €','marte-tot':'5.800 €',
+    'marte-note':'~€65/spot medio con volume disc. Maggio: 36 spot/sett. Giugno: 42→56 spot/sett.',
+    'ooh-label':'OOH · 3 impianti','ooh-mag':'2.000 €','ooh-giu':'3.500 €','ooh-tot':'5.500 €',
+    'ooh-note':'3 posizioni: SS7BIS, SP1 Cisterna, Via Circumvallazione Esterna.',
+    'tot-mag':'10.900 €','tot-giu':'15.800 €','tot-tot':'26.700 €',
+    'box-total':'26.700 €',
+    'box-range':'Range realistico: 24.000–29.500 € (±10% su tariffe radio/OOH)',
+    'dig-val':'12.000 € · 45%','radio-label':'Radio (Marte + P.Nuovo)','radio-val':'9.200 € · 34%',
+    'ooh-box-label':'OOH (3 impianti)','ooh-box-val':'5.500 € · 21%',sett:'~2.967 €',
+    pnuovo:true
+  }
+};
+function togglePlan(isFull) {
+  var p = isFull ? PM.full : PM.opt;
+  ['invest','canali','w1','w2','w3','w4','w5','w6','w7','w8','w9',
+   'meta-mag','meta-giu','meta-tot','meta-note',
+   'goog-mag','goog-giu','goog-tot',
+   'marte-mag','marte-giu','marte-tot','marte-note',
+   'ooh-label','ooh-mag','ooh-giu','ooh-tot','ooh-note',
+   'tot-mag','tot-giu','tot-tot','box-total','box-range',
+   'dig-val','radio-label','radio-val','ooh-box-label','ooh-box-val','sett'
+  ].forEach(function(k){
+    var el=document.getElementById('pm-v-'+k);
+    if(el) el.textContent=p[k];
+  });
+  document.querySelectorAll('.pm-pnuovo-row').forEach(function(el){
+    el.style.display = p.pnuovo ? '' : 'none';
+  });
+  var banner=document.getElementById('pm-opt-banner');
+  if(banner) banner.style.display = isFull ? 'none' : 'block';
+  // toggle visual
+  var sl=document.getElementById('pm-slider');
+  var kn=document.getElementById('pm-knob');
+  var lo=document.getElementById('pm-label-off');
+  var on=document.getElementById('pm-label-on');
+  if(sl){ sl.style.background = isFull ? '#00E5CC' : 'rgba(255,255,255,.15)'; }
+  if(kn){ kn.style.transform = isFull ? 'translateX(18px)' : 'translateX(0)'; kn.style.background = isFull ? '#003478' : '#fff'; }
+  if(lo){ lo.style.color = isFull ? 'rgba(255,255,255,.4)' : 'rgba(255,255,255,.75)'; }
+  if(on){ on.style.color = isFull ? '#fff' : 'rgba(255,255,255,.4)'; }
 }
 </script>
 </body>
