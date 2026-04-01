@@ -1982,16 +1982,9 @@ document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeManag
       setTimeout(function(){ loader.style.display = 'none'; }, 750);
     }
   }
-  // Skip loader instantly when returning from an internal page (PianoMedia, ManagerSummary, etc.)
-  if (sessionStorage.getItem('ribrain_internal_nav')) {
-    sessionStorage.removeItem('ribrain_internal_nav');
-    dismissLoader();
-  } else {
-    // Failsafe: always dismiss after 2.8s no matter what
-    setTimeout(dismissLoader, 2800);
-    // Fast path: dismiss 1.2s after full load
-    window.addEventListener('load', function(){ setTimeout(dismissLoader, 1200); });
-  }
+  // Always dismiss loader quickly — max 1.4s intro, failsafe at 2s
+  setTimeout(dismissLoader, 2000);
+  window.addEventListener('load', function(){ setTimeout(dismissLoader, 400); });
 })();
 </script>
 
