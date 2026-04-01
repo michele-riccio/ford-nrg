@@ -1214,6 +1214,20 @@ body.pm-open #pm-overlay{transform:translateY(0);}
 #pm-overlay .pm-total-row strong{color:#fff;}
 #pm-overlay .pm-nota{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);border-radius:10px;padding:12px 16px;font-size:.76rem;color:rgba(255,220,80,.8);line-height:1.6;margin-top:16px;}
 #pm-overlay .pm-footer{padding:24px 32px;text-align:center;border-top:1px solid rgba(255,255,255,.08);font-size:.72rem;color:rgba(255,255,255,.25);}
+/* ── PLAN TOGGLE ── */
+.pm-plan-toggle{display:flex;gap:3px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:3px;}
+.pm-plan-btn{padding:5px 16px;border-radius:18px;border:none;cursor:pointer;font-size:.62rem;font-weight:700;color:rgba(255,255,255,.5);background:transparent;transition:.2s;line-height:1.4;text-align:center;white-space:nowrap;}
+.pm-plan-btn strong{display:block;font-size:.74rem;letter-spacing:-.01em;}
+.pm-plan-btn.active{background:rgba(255,255,255,.16);color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+.pm-plan-btn.active strong{color:#00E5CC;}
+#pm-overlay[data-plan="full"] .pm-opt-only{display:none!important;}
+#pm-overlay[data-plan="opt"] .pm-full-only{display:none!important;}
+.pm-opt-banner{background:rgba(0,229,204,.07);border:1px solid rgba(0,229,204,.18);border-radius:12px;padding:14px 20px;margin:16px 0 0;}
+.pm-opt-banner-title{font-size:.65rem;font-weight:800;color:#00E5CC;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
+.pm-opt-cut{display:flex;flex-direction:column;gap:5px;}
+.pm-opt-cut-row{display:flex;align-items:baseline;gap:8px;font-size:.75rem;color:rgba(255,255,255,.7);}
+.pm-opt-cut-row span{color:rgba(255,255,255,.35);text-decoration:line-through;font-size:.7rem;}
+.pm-opt-cut-row strong{color:#fff;}
 @media(max-width:760px){
   #pm-overlay .pm-hd{padding:24px 20px;}
   #pm-overlay .pm-hd h1{font-size:1.4rem;}
@@ -1228,7 +1242,13 @@ body.pm-open #pm-overlay{transform:translateY(0);}
   <!-- BAR -->
   <div id="pm-bar">
     <div id="pm-bar-title">📅 Piano Media · <strong>Mag–Giu 2026</strong> &nbsp;·&nbsp; Ford NRG Castello di Cisterna</div>
-    <button id="pm-close" onclick="closePianoMedia()" title="Chiudi (ESC)">×</button>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="pm-plan-toggle">
+        <button class="pm-plan-btn active" data-plan="full" onclick="setPianoMediaPlan('full')">Piano Completo<strong>26.700 €</strong></button>
+        <button class="pm-plan-btn" data-plan="opt" onclick="setPianoMediaPlan('opt')">Piano Ottimizzato<strong>18.000 €</strong></button>
+      </div>
+      <button id="pm-close" onclick="closePianoMedia()" title="Chiudi (ESC)">×</button>
+    </div>
   </div>
   <!-- SCROLLABLE CONTENT -->
   <div id="pm-content">
@@ -1242,11 +1262,23 @@ body.pm-open #pm-overlay{transform:translateY(0);}
       </div>
     </div>
     <h1>Flight Plan.<br><span>1 Maggio — 30 Giugno 2026.</span></h1>
-    <p class="pm-hd-sub">Pianificazione media integrata · 9 settimane · 5 canali · Pre-lancio + Lancio + Inaugurazione</p>
+    <p class="pm-hd-sub">Pianificazione media integrata · 9 settimane ·
+      <span class="pm-full-only">5 canali</span><span class="pm-opt-only">4 canali</span>
+      · Pre-lancio + Lancio + Inaugurazione</p>
+    <div class="pm-opt-banner pm-opt-only">
+      <div class="pm-opt-banner-title">✂️ Cosa abbiamo ottimizzato — e perché non si rompe nulla</div>
+      <div class="pm-opt-cut">
+        <div class="pm-opt-cut-row">❌ Radio Punto Nuovo &nbsp;<span>−3.400 €</span>&nbsp;→&nbsp;<strong>tagliata. Radio Marte ha copertura superiore sul territorio. Due radio a budget ridotto diventano due voci deboli invece di una forte.</strong></div>
+        <div class="pm-opt-cut-row">📉 Meta Ads &nbsp;<span>10.000 €</span>&nbsp;→&nbsp;<strong>8.000 €. L'unico canale con targeting preciso su P.IVA e fleet manager. Ridotto ma sopra la soglia minima di frequenza efficace.</strong></div>
+        <div class="pm-opt-cut-row">📉 Google Search &nbsp;<span>2.000 €</span>&nbsp;→&nbsp;<strong>1.500 €. Demand capture: serve quando Meta e radio hanno già generato curiosità. Taglio marginale, funzione invariata.</strong></div>
+        <div class="pm-opt-cut-row">📉 Radio Marte &nbsp;<span>5.800 €</span>&nbsp;→&nbsp;<strong>4.500 €. Spot ridotti di ~20% nelle fasi di pre-lancio. La copertura sull'inaugurazione rimane invariata (8 spot/g).</strong></div>
+        <div class="pm-opt-cut-row">📉 OOH &nbsp;<span>5.500 €</span>&nbsp;→&nbsp;<strong>4.000 €. Da 3 a 2 impianti: si mantengono SS7BIS (zona industriale Nola) e SP1 Cisterna ingresso sede. Si taglia Via Circumvallazione.</strong></div>
+      </div>
+    </div>
     <div class="pm-hd-meta">
       <div><div class="pm-stat-n">9</div><div class="pm-stat-l">Settimane di campagna</div></div>
-      <div><div class="pm-stat-n">5</div><div class="pm-stat-l">Canali attivi</div></div>
-      <div><div class="pm-stat-n" style="color:#00E5CC;">~26.700€</div><div class="pm-stat-l">Investimento media totale</div></div>
+      <div><div class="pm-stat-n"><span class="pm-full-only">5</span><span class="pm-opt-only">4</span></div><div class="pm-stat-l">Canali attivi</div></div>
+      <div><div class="pm-stat-n" style="color:#00E5CC;"><span class="pm-full-only">~26.700€</span><span class="pm-opt-only">~18.000€</span></div><div class="pm-stat-l">Investimento media totale</div></div>
       <div><div class="pm-stat-n">3</div><div class="pm-stat-l">Fasi operative</div></div>
     </div>
   </div>
@@ -1356,7 +1388,7 @@ body.pm-open #pm-overlay{transform:translateY(0);}
             <td style="border-left:2px solid rgba(0,229,204,.3);"><div class="pm-fb pm-hi">8 spot/g</div></td>
             <td><div class="pm-fb pm-hi">8 spot/g</div></td>
           </tr>
-          <tr class="pm-r-pnuovo">
+          <tr class="pm-r-pnuovo pm-full-only">
             <td class="pm-ch-name">📻 Radio P.Nuovo<span class="pm-ch-sub">40 trasmettitori · talk/sport</span></td>
             <td><div class="pm-fb pm-lo" style="background:transparent;height:28px;"></div></td>
             <td><div class="pm-fb pm-lo" style="background:transparent;height:28px;"></div></td>
@@ -1382,15 +1414,15 @@ body.pm-open #pm-overlay{transform:translateY(0);}
           </tr>
           <tr>
             <td class="pm-ch-name" style="font-size:.7rem;color:#00E5CC;background:#0a1220;">💶 Invest./settimana<span class="pm-ch-sub">stima progressiva</span></td>
-            <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.4);">~800€</span></td>
-            <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.55);">~2.000€</span></td>
-            <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.65);">~3.200€</span></td>
-            <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.75);">~4.900€</span></td>
-            <td style="background:#0a1220;text-align:center;border-left:2px solid rgba(245,166,35,.3);"><span style="font-size:.72rem;font-weight:700;color:#F5A623;">~3.000€</span></td>
-            <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:#F5A623;">~3.100€</span></td>
-            <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:#F5A623;">~3.000€</span></td>
-            <td style="background:#0a1220;text-align:center;border-left:2px solid rgba(0,229,204,.3);"><span style="font-size:.72rem;font-weight:700;color:#00E5CC;">~3.600€</span></td>
-            <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:#00E5CC;">~3.100€</span></td>
+            <td style="background:#0a1220;text-align:center;"><span class="pm-full-only" style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.4);">~800€</span><span class="pm-opt-only" style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.4);">~600€</span></td>
+            <td style="background:#0a1220;text-align:center;"><span class="pm-full-only" style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.55);">~2.000€</span><span class="pm-opt-only" style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.55);">~1.350€</span></td>
+            <td style="background:#0a1220;text-align:center;"><span class="pm-full-only" style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.65);">~3.200€</span><span class="pm-opt-only" style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.65);">~2.350€</span></td>
+            <td style="background:#0a1220;text-align:center;"><span class="pm-full-only" style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.75);">~4.900€</span><span class="pm-opt-only" style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.75);">~3.000€</span></td>
+            <td style="background:#0a1220;text-align:center;border-left:2px solid rgba(245,166,35,.3);"><span class="pm-full-only" style="font-size:.72rem;font-weight:700;color:#F5A623;">~3.000€</span><span class="pm-opt-only" style="font-size:.72rem;font-weight:700;color:#F5A623;">~2.400€</span></td>
+            <td style="background:#0a1220;text-align:center;"><span class="pm-full-only" style="font-size:.72rem;font-weight:700;color:#F5A623;">~3.100€</span><span class="pm-opt-only" style="font-size:.72rem;font-weight:700;color:#F5A623;">~2.450€</span></td>
+            <td style="background:#0a1220;text-align:center;"><span class="pm-full-only" style="font-size:.72rem;font-weight:700;color:#F5A623;">~3.000€</span><span class="pm-opt-only" style="font-size:.72rem;font-weight:700;color:#F5A623;">~2.400€</span></td>
+            <td style="background:#0a1220;text-align:center;border-left:2px solid rgba(0,229,204,.3);"><span class="pm-full-only" style="font-size:.72rem;font-weight:700;color:#00E5CC;">~3.600€</span><span class="pm-opt-only" style="font-size:.72rem;font-weight:700;color:#00E5CC;">~1.950€</span></td>
+            <td style="background:#0a1220;text-align:center;"><span class="pm-full-only" style="font-size:.72rem;font-weight:700;color:#00E5CC;">~3.100€</span><span class="pm-opt-only" style="font-size:.72rem;font-weight:700;color:#00E5CC;">~1.500€</span></td>
           </tr>
         </tbody>
       </table>
@@ -1410,27 +1442,52 @@ body.pm-open #pm-overlay{transform:translateY(0);}
       <table class="pm-bt">
         <thead><tr><th>Canale</th><th>Maggio (W1–W4)</th><th>Giugno (W5–W9)</th><th>Totale</th><th>Note</th></tr></thead>
         <tbody>
-          <tr><td><span class="pm-ch-pill" style="background:#1666C1;"></span>Meta Ads</td><td>4.500 €</td><td>5.500 €</td><td>10.000 €</td><td style="font-size:.73rem;color:rgba(255,255,255,.5);text-align:left;">Ramp-up: 800→1.200→1.500€/sett. Giugno: 1.200–1.500€/sett. + boost inaugurazione</td></tr>
-          <tr><td><span class="pm-ch-pill" style="background:#34A853;"></span>Google Search + Maps</td><td>800 €</td><td>1.200 €</td><td>2.000 €</td><td style="font-size:.73rem;color:rgba(255,255,255,.5);text-align:left;">CPC brand: 0,40–0,80€. CPC veicoli commerciali Napoli: 1,20–2,20€. Maps PIN sponsorizzato incluso</td></tr>
-          <tr><td><span class="pm-ch-pill" style="background:#F5A623;"></span>Radio Marte</td><td>2.400 €</td><td>3.400 €</td><td>5.800 €</td><td style="font-size:.73rem;color:rgba(255,255,255,.5);text-align:left;">Stima pacchetto: ~€65/spot medio con volume disc. Maggio: 36 spot/sett (W2–W4). Giugno: 42→56 spot/sett.</td></tr>
-          <tr><td><span class="pm-ch-pill" style="background:#CC44FF;"></span>Radio Punto Nuovo</td><td>1.200 €</td><td>2.200 €</td><td>3.400 €</td><td style="font-size:.73rem;color:rgba(255,255,255,.5);text-align:left;">Entra in W3. ~€40/spot medio. Focus Morning Drive e fascia sportiva.</td></tr>
-          <tr><td><span class="pm-ch-pill" style="background:#00E5CC;"></span>OOH · 3 impianti</td><td>2.000 €</td><td>3.500 €</td><td>5.500 €</td><td style="font-size:.73rem;color:rgba(255,255,255,.5);text-align:left;">Entra in W3. €350–650/impianto per 2 settimane area Nola/Caserta.</td></tr>
-          <tr style="font-weight:800;"><td>TOTALE INVESTIMENTO MEDIA</td><td>10.900 €</td><td>15.800 €</td><td>26.700 €</td><td style="font-size:.73rem;color:#00E5CC;text-align:left;">IVA esclusa · Non include fee agenzia e produzione</td></tr>
+          <tr><td><span class="pm-ch-pill" style="background:#1666C1;"></span>Meta Ads</td>
+            <td><span class="pm-full-only">4.500 €</span><span class="pm-opt-only">3.500 €</span></td>
+            <td><span class="pm-full-only">5.500 €</span><span class="pm-opt-only">4.500 €</span></td>
+            <td><span class="pm-full-only">10.000 €</span><span class="pm-opt-only">8.000 €</span></td>
+            <td style="font-size:.73rem;color:rgba(255,255,255,.5);text-align:left;"><span class="pm-full-only">Ramp-up: 800→1.200→1.500€/sett. + boost inaugurazione</span><span class="pm-opt-only">Ramp-up ridotto: 600→1.000→1.300€/sett. Frequenza sufficiente per targeting B2B, inaugurazione invariata</span></td></tr>
+          <tr><td><span class="pm-ch-pill" style="background:#34A853;"></span>Google Search + Maps</td>
+            <td><span class="pm-full-only">800 €</span><span class="pm-opt-only">600 €</span></td>
+            <td><span class="pm-full-only">1.200 €</span><span class="pm-opt-only">900 €</span></td>
+            <td><span class="pm-full-only">2.000 €</span><span class="pm-opt-only">1.500 €</span></td>
+            <td style="font-size:.73rem;color:rgba(255,255,255,.5);text-align:left;">CPC brand: 0,40–0,80€. Maps PIN sponsorizzato incluso. Funzione demand capture invariata.</td></tr>
+          <tr><td><span class="pm-ch-pill" style="background:#F5A623;"></span>Radio Marte</td>
+            <td><span class="pm-full-only">2.400 €</span><span class="pm-opt-only">1.800 €</span></td>
+            <td><span class="pm-full-only">3.400 €</span><span class="pm-opt-only">2.700 €</span></td>
+            <td><span class="pm-full-only">5.800 €</span><span class="pm-opt-only">4.500 €</span></td>
+            <td style="font-size:.73rem;color:rgba(255,255,255,.5);text-align:left;"><span class="pm-full-only">Pacchetto: ~€65/spot medio. Maggio: 36 spot/sett. Giugno: 42→56 spot/sett.</span><span class="pm-opt-only">Spot ridotti ~20% in pre-lancio. Fase inaugurazione (8 spot/g) invariata — il picco non si tocca.</span></td></tr>
+          <tr class="pm-full-only"><td><span class="pm-ch-pill" style="background:#CC44FF;"></span>Radio Punto Nuovo</td>
+            <td>1.200 €</td><td>2.200 €</td><td>3.400 €</td>
+            <td style="font-size:.73rem;color:rgba(255,255,255,.5);text-align:left;">Entra in W3. ~€40/spot medio. Focus Morning Drive e fascia sportiva.</td></tr>
+          <tr class="pm-opt-only" style="opacity:.35;"><td><span class="pm-ch-pill" style="background:#CC44FF;opacity:.3;"></span><s style="color:rgba(255,255,255,.4);font-size:.8rem;">Radio Punto Nuovo</s></td>
+            <td style="color:rgba(255,255,255,.3);">—</td><td style="color:rgba(255,255,255,.3);">—</td><td style="color:rgba(255,255,255,.3);">0 €</td>
+            <td style="font-size:.73rem;color:rgba(255,255,255,.3);text-align:left;">Eliminata: budget insufficiente per generare frequenza efficace su due radio. Marte copre il territorio.</td></tr>
+          <tr><td><span class="pm-ch-pill" style="background:#00E5CC;"></span><span class="pm-full-only">OOH · 3 impianti</span><span class="pm-opt-only">OOH · 2 impianti</span></td>
+            <td><span class="pm-full-only">2.000 €</span><span class="pm-opt-only">1.500 €</span></td>
+            <td><span class="pm-full-only">3.500 €</span><span class="pm-opt-only">2.500 €</span></td>
+            <td><span class="pm-full-only">5.500 €</span><span class="pm-opt-only">4.000 €</span></td>
+            <td style="font-size:.73rem;color:rgba(255,255,255,.5);text-align:left;"><span class="pm-full-only">Entra in W3. 3 posizioni su arterie Nola/Caserta/Circumvallazione.</span><span class="pm-opt-only">SS7BIS (zona ind. Nola) + SP1 Cisterna sede. Tagliata Via Circumvallazione.</span></td></tr>
+          <tr style="font-weight:800;"><td>TOTALE INVESTIMENTO MEDIA</td>
+            <td><span class="pm-full-only">10.900 €</span><span class="pm-opt-only">7.400 €</span></td>
+            <td><span class="pm-full-only">15.800 €</span><span class="pm-opt-only">10.600 €</span></td>
+            <td><span class="pm-full-only">26.700 €</span><span class="pm-opt-only">18.000 €</span></td>
+            <td style="font-size:.73rem;color:#00E5CC;text-align:left;">IVA esclusa · Non include fee agenzia e produzione</td></tr>
         </tbody>
       </table>
     </div>
     <div class="pm-total-box">
       <div>
         <div style="font-size:1rem;font-weight:700;color:rgba(255,255,255,.82);margin-bottom:4px;">Investimento media totale</div>
-        <div class="pm-total-n">26.700 €</div>
-        <div class="pm-total-range">Range realistico: 24.000 – 29.500 € (±10% su tariffe radio/OOH)</div>
+        <div class="pm-total-n"><span class="pm-full-only">26.700 €</span><span class="pm-opt-only">18.000 €</span></div>
+        <div class="pm-total-range"><span class="pm-full-only">Range realistico: 24.000 – 29.500 € (±10% su tariffe radio/OOH)</span><span class="pm-opt-only">Soglia minima raccomandata: ~16.000 € · Questo piano ha margine di sicurezza</span></div>
       </div>
       <div class="pm-total-right">
-        <div class="pm-total-row"><span>Digital (Meta + Google)</span><strong>12.000 € · 45%</strong></div>
-        <div class="pm-total-row"><span>Radio (Marte + P.Nuovo)</span><strong>9.200 € · 34%</strong></div>
-        <div class="pm-total-row"><span>OOH (3 impianti)</span><strong>5.500 € · 21%</strong></div>
+        <div class="pm-total-row"><span>Digital (Meta + Google)</span><strong><span class="pm-full-only">12.000 € · 45%</span><span class="pm-opt-only">9.500 € · 53%</span></strong></div>
+        <div class="pm-total-row"><span><span class="pm-full-only">Radio (Marte + P.Nuovo)</span><span class="pm-opt-only">Radio (Marte)</span></span><strong><span class="pm-full-only">9.200 € · 34%</span><span class="pm-opt-only">4.500 € · 25%</span></strong></div>
+        <div class="pm-total-row"><span><span class="pm-full-only">OOH (3 impianti)</span><span class="pm-opt-only">OOH (2 impianti)</span></span><strong><span class="pm-full-only">5.500 € · 21%</span><span class="pm-opt-only">4.000 € · 22%</span></strong></div>
         <div class="pm-total-row" style="border-top:1px solid rgba(255,255,255,.1);padding-top:8px;margin-top:4px;"><span>Durata campagna</span><strong>9 settimane</strong></div>
-        <div class="pm-total-row"><span>Media per settimana</span><strong>~2.967 €</strong></div>
+        <div class="pm-total-row"><span>Media per settimana</span><strong><span class="pm-full-only">~2.967 €</span><span class="pm-opt-only">~2.000 €</span></strong></div>
       </div>
     </div>
     <div class="pm-nota" style="margin-top:16px;">⚠️ <strong>Non inclusi:</strong> costi di produzione spot radio (400–800€ per spot, una tantum), fee di gestione campagne digitali (incluse nell'investimento agenzia), affissioni extra nella settimana dell'evento.</div>
@@ -1494,7 +1551,7 @@ body.pm-open #pm-overlay{transform:translateY(0);}
         <div class="pm-r-row"><span>Costo/spot effettivo (pacchetto)</span><span class="pm-r-val">~25–30 € con disc.</span></div>
         <div class="pm-r-row"><span>Investimento stimato 2 mesi</span><span class="pm-r-val">5.800 €</span></div>
       </div>
-      <div class="pm-radio-card">
+      <div class="pm-radio-card pm-full-only">
         <div class="pm-r-name">📻 Radio Punto Nuovo</div>
         <div class="pm-r-sub">Priorità alta · ~40 trasmettitori · Talk + Sport</div>
         <div class="pm-r-row"><span>Inizio flight</span><span class="pm-r-val">W3 (12 maggio)</span></div>
@@ -1557,6 +1614,15 @@ function openPianoMedia(){
 function closePianoMedia(){
   document.body.classList.remove('pm-open');
 }
+function setPianoMediaPlan(plan){
+  var overlay = document.getElementById('pm-overlay');
+  overlay.setAttribute('data-plan', plan);
+  document.querySelectorAll('.pm-plan-btn').forEach(function(btn){
+    btn.classList.toggle('active', btn.getAttribute('data-plan') === plan);
+  });
+}
+// init
+document.getElementById('pm-overlay').setAttribute('data-plan','full');
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape') closePianoMedia();
 });
