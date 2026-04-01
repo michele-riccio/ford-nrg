@@ -963,9 +963,9 @@ footer { text-align:center; padding:40px; border-top:1px solid var(--border); fo
     <li><a href="#budget">Budget</a></li>
     <li><a href="#cta">Decisioni</a></li>
   </ul>
-  <a href="FordNRG_PianoMedia.html" onclick="pageFade(event,this.getAttribute('href'))" class="nav-pill" style="margin-left:8px;display:flex;align-items:center;gap:6px;white-space:nowrap;text-decoration:none;">
+  <button class="nav-pill" onclick="openPianoMedia()" style="margin-left:8px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;">
     <span style="font-size:.8rem;">📅</span> Piano Media
-  </a>
+  </button>
   <button class="nav-pill" onclick="openManagerView()" style="margin-left:6px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;">
     <span style="font-size:.8rem;">◆</span> Manager View
   </button>
@@ -1110,6 +1110,457 @@ footer { text-align:center; padding:40px; border-top:1px solid var(--border); fo
 
   </div><!-- /body cards -->
 </div><!-- /mv-panel -->
+
+<!-- ═══════════════════════════════════════════════
+     PIANO MEDIA OVERLAY — stesso pattern Bobst
+     translateY(100%) → translateY(0) su body.pm-open
+════════════════════════════════════════════════ -->
+<style>
+#pm-overlay{position:fixed;inset:0;z-index:950;background:#080f1e;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .45s cubic-bezier(.25,.46,.45,.94);will-change:transform;}
+body.pm-open #pm-overlay{transform:translateY(0);}
+#pm-bar{background:linear-gradient(135deg,#003478 0%,#0a1628 100%);height:54px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid rgba(255,255,255,.1);}
+#pm-bar-title{font-size:.78rem;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.06em;display:flex;align-items:center;gap:8px;}
+#pm-bar-title strong{color:#00E5CC;}
+#pm-close{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+#pm-close:hover{background:rgba(255,255,255,.22);}
+#pm-content{flex:1;overflow-y:auto;}
+/* ── scoped PM classes ── */
+#pm-overlay .pm-hd{background:linear-gradient(135deg,#003478 0%,#0a1628 100%);padding:36px 48px 28px;position:relative;overflow:hidden;}
+#pm-overlay .pm-hd::before{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(0,229,204,.12) 0%,transparent 70%);}
+#pm-overlay .pm-hd-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;}
+#pm-overlay .pm-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
+#pm-overlay .pm-badge-ford{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.85);}
+#pm-overlay .pm-badge-doc{background:rgba(0,229,204,.15);border:1px solid rgba(0,229,204,.3);color:#00E5CC;}
+#pm-overlay .pm-hd h1{font-size:1.9rem;font-weight:900;line-height:1.15;margin-bottom:6px;}
+#pm-overlay .pm-hd h1 span{color:#00E5CC;}
+#pm-overlay .pm-hd-sub{font-size:.88rem;color:rgba(255,255,255,.6);}
+#pm-overlay .pm-hd-meta{display:flex;gap:24px;margin-top:18px;flex-wrap:wrap;}
+#pm-overlay .pm-stat-n{font-size:1.5rem;font-weight:900;color:#fff;line-height:1;}
+#pm-overlay .pm-stat-l{font-size:.63rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.08em;margin-top:3px;}
+#pm-overlay .pm-wrap{max-width:1100px;margin:0 auto;padding:0 32px;}
+#pm-overlay .pm-stitle{font-size:.62rem;font-weight:800;color:#00E5CC;text-transform:uppercase;letter-spacing:.14em;margin-bottom:8px;}
+#pm-overlay .pm-shead{font-size:1.35rem;font-weight:900;color:#fff;margin-bottom:6px;}
+#pm-overlay .pm-sdesc{font-size:.82rem;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:24px;}
+#pm-overlay .pm-sec{padding:40px 0;}
+#pm-overlay .pm-sec.alt{background:#0e1829;}
+#pm-overlay .pm-fase-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.08);border-radius:12px;overflow:hidden;margin:28px 0;}
+#pm-overlay .pm-fase{padding:16px 20px;background:#0e1829;}
+#pm-overlay .pm-fase.f1{border-top:3px solid #1666C1;}
+#pm-overlay .pm-fase.f2{border-top:3px solid #F5A623;}
+#pm-overlay .pm-fase.f3{border-top:3px solid #00E5CC;}
+#pm-overlay .pm-fase-tag{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;}
+#pm-overlay .pm-fase.f1 .pm-fase-tag{color:#1666C1;}
+#pm-overlay .pm-fase.f2 .pm-fase-tag{color:#F5A623;}
+#pm-overlay .pm-fase.f3 .pm-fase-tag{color:#00E5CC;}
+#pm-overlay .pm-fase-name{font-size:.9rem;font-weight:800;color:#fff;margin-bottom:2px;}
+#pm-overlay .pm-fase-date{font-size:.72rem;color:rgba(255,255,255,.5);}
+#pm-overlay .pm-fase-obj{font-size:.74rem;color:rgba(255,255,255,.82);margin-top:8px;line-height:1.5;}
+#pm-overlay .pm-legend{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:16px;}
+#pm-overlay .pm-leg-item{display:flex;align-items:center;gap:7px;font-size:.74rem;color:rgba(255,255,255,.82);}
+#pm-overlay .pm-leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+#pm-overlay .pm-int-sq{width:24px;height:16px;border-radius:3px;}
+#pm-overlay .pm-flight-wrap{overflow-x:auto;margin-bottom:36px;border-radius:14px;border:1px solid rgba(255,255,255,.08);}
+#pm-overlay .pm-ft{width:100%;border-collapse:collapse;min-width:780px;}
+#pm-overlay .pm-ft th{background:#13203a;padding:8px 6px;font-size:.62rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.07em;text-align:center;border-bottom:1px solid rgba(255,255,255,.08);}
+#pm-overlay .pm-ft th.pm-ch-col{text-align:left;padding-left:16px;width:160px;}
+#pm-overlay .pm-ft th.pm-fase-sep{border-left:2px solid rgba(255,255,255,.12);}
+#pm-overlay .pm-ft td{padding:6px 4px;background:#0e1829;border-bottom:1px solid rgba(255,255,255,.04);}
+#pm-overlay .pm-ft td.pm-ch-name{padding:10px 16px;font-size:.8rem;font-weight:700;color:#fff;white-space:nowrap;background:#13203a;border-right:1px solid rgba(255,255,255,.08);}
+#pm-overlay .pm-ch-sub{font-size:.64rem;color:rgba(255,255,255,.5);font-weight:400;display:block;margin-top:1px;}
+#pm-overlay .pm-fb{border-radius:4px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;letter-spacing:.04em;color:rgba(255,255,255,.9);white-space:nowrap;transition:.2s;}
+#pm-overlay .pm-fb:hover{filter:brightness(1.2);}
+#pm-overlay .pm-lo{opacity:.35;}#pm-overlay .pm-md{opacity:.65;}#pm-overlay .pm-hi{opacity:1;}
+#pm-overlay .pm-r-meta .pm-fb{background:#1666C1;}
+#pm-overlay .pm-r-google .pm-fb{background:#34A853;}
+#pm-overlay .pm-r-marte .pm-fb{background:#F5A623;}
+#pm-overlay .pm-r-pnuovo .pm-fb{background:#CC44FF;}
+#pm-overlay .pm-r-ooh .pm-fb{background:#00E5CC;color:#0a1628;}
+#pm-overlay .pm-wf1{border-left:2px solid rgba(22,102,193,.4);}
+#pm-overlay .pm-wf2{border-left:2px solid rgba(245,166,35,.4);}
+#pm-overlay .pm-wf3{border-left:2px solid rgba(0,229,204,.4);}
+#pm-overlay .pm-wl{font-size:.64rem;color:rgba(255,255,255,.5);text-align:center;line-height:1.3;}
+#pm-overlay .pm-wl strong{display:block;color:rgba(255,255,255,.82);font-size:.68rem;}
+#pm-overlay .pm-btable-wrap{overflow-x:auto;border-radius:14px;border:1px solid rgba(255,255,255,.08);margin-bottom:24px;}
+#pm-overlay .pm-bt{width:100%;border-collapse:collapse;min-width:600px;}
+#pm-overlay .pm-bt th{background:#13203a;padding:10px 16px;font-size:.65rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;text-align:right;}
+#pm-overlay .pm-bt th:first-child{text-align:left;}
+#pm-overlay .pm-bt td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.05);font-size:.83rem;color:rgba(255,255,255,.82);text-align:right;}
+#pm-overlay .pm-bt td:first-child{text-align:left;font-weight:700;color:#fff;}
+#pm-overlay .pm-bt tr:last-child td{border-bottom:none;font-weight:700;color:#fff;background:rgba(255,255,255,.04);}
+#pm-overlay .pm-bt tr:last-child td:first-child{color:#00E5CC;}
+#pm-overlay .pm-bt tr:last-child td:last-child{color:#00E5CC;}
+#pm-overlay .pm-ch-pill{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:7px;vertical-align:middle;}
+#pm-overlay .pm-ooh-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;}
+#pm-overlay .pm-ooh-card{background:#13203a;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px 18px;}
+#pm-overlay .pm-ooh-card.primary{border-color:rgba(0,229,204,.25);}
+#pm-overlay .pm-ooh-num{font-size:.65rem;font-weight:800;color:#00E5CC;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;}
+#pm-overlay .pm-ooh-pos{font-size:.88rem;font-weight:800;color:#fff;margin-bottom:4px;}
+#pm-overlay .pm-ooh-why{font-size:.76rem;color:rgba(255,255,255,.5);line-height:1.5;margin-bottom:8px;}
+#pm-overlay .pm-ooh-tag{display:inline-flex;align-items:center;gap:4px;background:rgba(0,229,204,.1);border:1px solid rgba(0,229,204,.2);border-radius:6px;padding:3px 8px;font-size:.64rem;font-weight:700;color:#00E5CC;}
+#pm-overlay .pm-ooh-card.secondary .pm-ooh-num{color:rgba(255,255,255,.5);}
+#pm-overlay .pm-ooh-card.secondary .pm-ooh-tag{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.5);}
+#pm-overlay .pm-radio-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+#pm-overlay .pm-radio-card{background:#13203a;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:20px;}
+#pm-overlay .pm-r-name{font-size:1rem;font-weight:900;color:#fff;margin-bottom:4px;}
+#pm-overlay .pm-r-sub{font-size:.74rem;color:rgba(255,255,255,.5);margin-bottom:14px;}
+#pm-overlay .pm-r-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:.78rem;}
+#pm-overlay .pm-r-row:last-child{border-bottom:none;}
+#pm-overlay .pm-r-val{font-weight:700;color:#F5A623;}
+#pm-overlay .pm-total-box{background:linear-gradient(135deg,rgba(0,229,204,.1) 0%,rgba(22,102,193,.1) 100%);border:1.5px solid rgba(0,229,204,.3);border-radius:16px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;margin-top:28px;}
+#pm-overlay .pm-total-n{font-size:2.4rem;font-weight:900;color:#00E5CC;line-height:1;letter-spacing:-.02em;}
+#pm-overlay .pm-total-range{font-size:.8rem;color:rgba(255,255,255,.5);margin-top:4px;}
+#pm-overlay .pm-total-right{display:flex;flex-direction:column;gap:8px;}
+#pm-overlay .pm-total-row{display:flex;justify-content:space-between;gap:32px;font-size:.8rem;color:rgba(255,255,255,.5);}
+#pm-overlay .pm-total-row strong{color:#fff;}
+#pm-overlay .pm-nota{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);border-radius:10px;padding:12px 16px;font-size:.76rem;color:rgba(255,220,80,.8);line-height:1.6;margin-top:16px;}
+#pm-overlay .pm-footer{padding:24px 32px;text-align:center;border-top:1px solid rgba(255,255,255,.08);font-size:.72rem;color:rgba(255,255,255,.25);}
+@media(max-width:760px){
+  #pm-overlay .pm-hd{padding:24px 20px;}
+  #pm-overlay .pm-hd h1{font-size:1.4rem;}
+  #pm-overlay .pm-wrap{padding:0 16px;}
+  #pm-overlay .pm-fase-strip{grid-template-columns:1fr;}
+  #pm-overlay .pm-ooh-grid,#pm-overlay .pm-radio-grid{grid-template-columns:1fr;}
+  #pm-overlay .pm-total-box{flex-direction:column;}
+}
+</style>
+
+<div id="pm-overlay">
+  <!-- BAR -->
+  <div id="pm-bar">
+    <div id="pm-bar-title">📅 Piano Media · <strong>Mag–Giu 2026</strong> &nbsp;·&nbsp; Ford NRG Castello di Cisterna</div>
+    <button id="pm-close" onclick="closePianoMedia()" title="Chiudi (ESC)">×</button>
+  </div>
+  <!-- SCROLLABLE CONTENT -->
+  <div id="pm-content">
+
+  <!-- HEADER -->
+  <div class="pm-hd">
+    <div class="pm-hd-top">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="pm-badge pm-badge-ford">Ford NRG · Castello di Cisterna</span>
+        <span class="pm-badge pm-badge-doc">Piano Media Lancio 2026</span>
+      </div>
+    </div>
+    <h1>Flight Plan.<br><span>1 Maggio — 30 Giugno 2026.</span></h1>
+    <p class="pm-hd-sub">Pianificazione media integrata · 9 settimane · 5 canali · Pre-lancio + Lancio + Inaugurazione</p>
+    <div class="pm-hd-meta">
+      <div><div class="pm-stat-n">9</div><div class="pm-stat-l">Settimane di campagna</div></div>
+      <div><div class="pm-stat-n">5</div><div class="pm-stat-l">Canali attivi</div></div>
+      <div><div class="pm-stat-n" style="color:#00E5CC;">~26.700€</div><div class="pm-stat-l">Investimento media totale</div></div>
+      <div><div class="pm-stat-n">3</div><div class="pm-stat-l">Fasi operative</div></div>
+    </div>
+  </div>
+
+  <!-- FASI -->
+  <div class="pm-sec">
+  <div class="pm-wrap">
+    <div class="pm-stitle">Struttura della campagna</div>
+    <div class="pm-shead">3 fasi. Obiettivi distinti.</div>
+    <div class="pm-fase-strip">
+      <div class="pm-fase f1">
+        <div class="pm-fase-tag">Fase 1 · W1–W4</div>
+        <div class="pm-fase-name">Pre-lancio</div>
+        <div class="pm-fase-date">1 maggio → 25 maggio (4 settimane)</div>
+        <div class="pm-fase-obj">Costruire awareness nelle PMI del territorio. Generare i primi contatti B2B. Alimentare la lista di persone da invitare all'inaugurazione. Meta è il canale dominante — radio e OOH entrano dalla settimana 2.</div>
+      </div>
+      <div class="pm-fase f2">
+        <div class="pm-fase-tag">Fase 2 · W5–W7</div>
+        <div class="pm-fase-name">Lancio pieno</div>
+        <div class="pm-fase-date">26 maggio → 15 giugno (3 settimane)</div>
+        <div class="pm-fase-obj">Tutti i canali a piena potenza. Obiettivo: raccolta appuntamenti, visite in sede, inviti confermati all'evento. Radio passa a 6 spot/giorno. OOH confermato su tutte le posizioni.</div>
+      </div>
+      <div class="pm-fase f3">
+        <div class="pm-fase-tag">Fase 3 · W8–W9</div>
+        <div class="pm-fase-name">Inaugurazione</div>
+        <div class="pm-fase-date">16 giugno → 30 giugno (2 settimane)</div>
+        <div class="pm-fase-obj">Picco di comunicazione. Radio sale a 8 spot/giorno. Meta con retargeting su chi ha interagito nelle settimane precedenti. OOH mantiene posizioni. L'obiettivo è convertire l'audience calda in presenti all'evento.</div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- FLIGHT CHART -->
+  <div class="pm-sec alt">
+  <div class="pm-wrap">
+    <div class="pm-stitle">Flight chart — settimana per settimana</div>
+    <div class="pm-shead">Attività per canale.</div>
+    <div class="pm-legend" style="margin-bottom:20px;">
+      <div class="pm-leg-item"><div style="display:flex;align-items:center;gap:6px;">
+        <div class="pm-int-sq" style="background:#1666C1;opacity:.35;"></div><span style="font-size:.72rem;color:rgba(255,255,255,.5);">Bassa</span>
+        <div class="pm-int-sq" style="background:#1666C1;opacity:.65;"></div><span style="font-size:.72rem;color:rgba(255,255,255,.5);">Media</span>
+        <div class="pm-int-sq" style="background:#1666C1;opacity:1;"></div><span style="font-size:.72rem;color:rgba(255,255,255,.5);">Piena</span>
+      </div></div>
+      <div style="width:1px;height:20px;background:rgba(255,255,255,.08);flex-shrink:0;"></div>
+      <div class="pm-leg-item"><div class="pm-leg-dot" style="background:#1666C1;"></div>Meta Ads</div>
+      <div class="pm-leg-item"><div class="pm-leg-dot" style="background:#34A853;"></div>Google</div>
+      <div class="pm-leg-item"><div class="pm-leg-dot" style="background:#F5A623;"></div>Radio Marte</div>
+      <div class="pm-leg-item"><div class="pm-leg-dot" style="background:#CC44FF;"></div>Radio P.Nuovo</div>
+      <div class="pm-leg-item"><div class="pm-leg-dot" style="background:#00E5CC;"></div>OOH</div>
+    </div>
+    <div class="pm-flight-wrap">
+      <table class="pm-ft">
+        <thead>
+          <tr>
+            <th class="pm-ch-col" style="background:#0a1220;border-bottom:none;"></th>
+            <th colspan="4" style="background:rgba(22,102,193,.15);border-bottom:2px solid rgba(22,102,193,.5);color:#1666C1;font-size:.65rem;letter-spacing:.1em;text-align:center;padding:7px 4px;">● PRE-LANCIO · W1–W4 · 1–25 mag</th>
+            <th colspan="3" class="pm-fase-sep" style="background:rgba(245,166,35,.12);border-bottom:2px solid rgba(245,166,35,.5);color:#F5A623;font-size:.65rem;letter-spacing:.1em;text-align:center;padding:7px 4px;">● LANCIO PIENO · W5–W7 · 26 mag–15 giu</th>
+            <th colspan="2" class="pm-fase-sep" style="background:rgba(0,229,204,.12);border-bottom:2px solid rgba(0,229,204,.5);color:#00E5CC;font-size:.65rem;letter-spacing:.1em;text-align:center;padding:7px 4px;">● INAUGURAZIONE · W8–W9 · 16–30 giu</th>
+          </tr>
+          <tr>
+            <th class="pm-ch-col">Canale</th>
+            <th class="pm-wf1"><div class="pm-wl"><strong>W1</strong>1–4 mag</div></th>
+            <th><div class="pm-wl"><strong>W2</strong>5–11 mag</div></th>
+            <th><div class="pm-wl"><strong>W3</strong>12–18 mag</div></th>
+            <th><div class="pm-wl"><strong>W4</strong>19–25 mag</div></th>
+            <th class="pm-wf2 pm-fase-sep"><div class="pm-wl"><strong>W5</strong>26 mag–1 giu</div></th>
+            <th><div class="pm-wl"><strong>W6</strong>2–8 giu</div></th>
+            <th><div class="pm-wl"><strong>W7</strong>9–15 giu</div></th>
+            <th class="pm-wf3 pm-fase-sep"><div class="pm-wl"><strong>W8</strong>16–22 giu</div></th>
+            <th><div class="pm-wl"><strong>W9</strong>23–30 giu</div></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="pm-r-meta">
+            <td class="pm-ch-name">📱 Meta Ads<span class="pm-ch-sub">Facebook · Instagram</span></td>
+            <td><div class="pm-fb pm-md">Awareness</div></td>
+            <td><div class="pm-fb pm-md">Lead Gen</div></td>
+            <td><div class="pm-fb pm-hi">Retargeting</div></td>
+            <td><div class="pm-fb pm-hi">Full</div></td>
+            <td style="border-left:2px solid rgba(245,166,35,.3);"><div class="pm-fb pm-hi">Peak</div></td>
+            <td><div class="pm-fb pm-hi">Inviti</div></td>
+            <td><div class="pm-fb pm-hi">Spinta</div></td>
+            <td style="border-left:2px solid rgba(0,229,204,.3);"><div class="pm-fb pm-hi">Inaug.</div></td>
+            <td><div class="pm-fb pm-md">Post</div></td>
+          </tr>
+          <tr class="pm-r-google">
+            <td class="pm-ch-name">🔍 Google Ads<span class="pm-ch-sub">Search · Maps PIN</span></td>
+            <td><div class="pm-fb pm-lo">Brand KW</div></td>
+            <td><div class="pm-fb pm-lo">+VC KW</div></td>
+            <td><div class="pm-fb pm-md">Maps PIN</div></td>
+            <td><div class="pm-fb pm-md">Full</div></td>
+            <td style="border-left:2px solid rgba(245,166,35,.3);"><div class="pm-fb pm-hi">Peak</div></td>
+            <td><div class="pm-fb pm-hi">Full</div></td>
+            <td><div class="pm-fb pm-hi">Pre-Ev.</div></td>
+            <td style="border-left:2px solid rgba(0,229,204,.3);"><div class="pm-fb pm-hi">Boost</div></td>
+            <td><div class="pm-fb pm-md">Post</div></td>
+          </tr>
+          <tr class="pm-r-marte">
+            <td class="pm-ch-name">📻 Radio Marte<span class="pm-ch-sub">FM + DAB+ · 4→6→8 spot/g</span></td>
+            <td><div class="pm-fb pm-lo" style="background:transparent;height:28px;"></div></td>
+            <td><div class="pm-fb pm-md">4 spot/g</div></td>
+            <td><div class="pm-fb pm-md">4 spot/g</div></td>
+            <td><div class="pm-fb pm-hi">6 spot/g</div></td>
+            <td style="border-left:2px solid rgba(245,166,35,.3);"><div class="pm-fb pm-hi">6 spot/g</div></td>
+            <td><div class="pm-fb pm-hi">6 spot/g</div></td>
+            <td><div class="pm-fb pm-hi">6 spot/g</div></td>
+            <td style="border-left:2px solid rgba(0,229,204,.3);"><div class="pm-fb pm-hi">8 spot/g</div></td>
+            <td><div class="pm-fb pm-hi">8 spot/g</div></td>
+          </tr>
+          <tr class="pm-r-pnuovo">
+            <td class="pm-ch-name">📻 Radio P.Nuovo<span class="pm-ch-sub">40 trasmettitori · talk/sport</span></td>
+            <td><div class="pm-fb pm-lo" style="background:transparent;height:28px;"></div></td>
+            <td><div class="pm-fb pm-lo" style="background:transparent;height:28px;"></div></td>
+            <td><div class="pm-fb pm-md">4 spot/g</div></td>
+            <td><div class="pm-fb pm-md">4 spot/g</div></td>
+            <td style="border-left:2px solid rgba(245,166,35,.3);"><div class="pm-fb pm-hi">6 spot/g</div></td>
+            <td><div class="pm-fb pm-hi">6 spot/g</div></td>
+            <td><div class="pm-fb pm-hi">6 spot/g</div></td>
+            <td style="border-left:2px solid rgba(0,229,204,.3);"><div class="pm-fb pm-hi">8 spot/g</div></td>
+            <td><div class="pm-fb pm-hi">8 spot/g</div></td>
+          </tr>
+          <tr class="pm-r-ooh">
+            <td class="pm-ch-name">📍 OOH · Affissioni<span class="pm-ch-sub">3 impianti strategici</span></td>
+            <td><div class="pm-fb pm-lo" style="background:transparent;height:28px;"></div></td>
+            <td><div class="pm-fb pm-lo" style="background:transparent;height:28px;"></div></td>
+            <td><div class="pm-fb pm-md">2 pos.</div></td>
+            <td><div class="pm-fb pm-hi">3 pos.</div></td>
+            <td style="border-left:2px solid rgba(245,166,35,.3);"><div class="pm-fb pm-hi">Full</div></td>
+            <td><div class="pm-fb pm-hi">Full</div></td>
+            <td><div class="pm-fb pm-hi">Full</div></td>
+            <td style="border-left:2px solid rgba(0,229,204,.3);"><div class="pm-fb pm-hi">+Extra</div></td>
+            <td><div class="pm-fb pm-hi">Full</div></td>
+          </tr>
+          <tr>
+            <td class="pm-ch-name" style="font-size:.7rem;color:#00E5CC;background:#0a1220;">💶 Invest./settimana<span class="pm-ch-sub">stima progressiva</span></td>
+            <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.4);">~800€</span></td>
+            <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.55);">~2.000€</span></td>
+            <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.65);">~3.200€</span></td>
+            <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.75);">~4.900€</span></td>
+            <td style="background:#0a1220;text-align:center;border-left:2px solid rgba(245,166,35,.3);"><span style="font-size:.72rem;font-weight:700;color:#F5A623;">~3.000€</span></td>
+            <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:#F5A623;">~3.100€</span></td>
+            <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:#F5A623;">~3.000€</span></td>
+            <td style="background:#0a1220;text-align:center;border-left:2px solid rgba(0,229,204,.3);"><span style="font-size:.72rem;font-weight:700;color:#00E5CC;">~3.600€</span></td>
+            <td style="background:#0a1220;text-align:center;"><span style="font-size:.72rem;font-weight:700;color:#00E5CC;">~3.100€</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pm-nota" style="margin-bottom:10px;">📅 <strong>Nota W1 (1–4 maggio):</strong> il 1° maggio è Festa del Lavoro (venerdì festivo) — W1 ha effettivamente 1 solo giorno lavorativo (lunedì 4 maggio). La campagna Meta e Google parte lunedì 4 maggio. Radio e OOH entrano dalla settimana successiva (W2/W3) come da piano.</div>
+    <div class="pm-nota">💡 <strong>Logica delle fasi radio:</strong> le emittenti entrano in scalare per evitare saturazione precoce. Radio Marte parte in W2 per costruire il brand prima del lancio. Punto Nuovo entra in W3 per amplificare e raggiungere il target talk/sportivo. Nella settimana dell'inaugurazione entrambe salgono a 8 spot/giorno su tutte le fasce. <strong>Tariffe:</strong> i costi per spot riflettono il prezzo di pacchetto negoziato (volume 2 mesi + 2 emittenti) — il listino rack è 2–3x superiore.</div>
+  </div>
+  </div>
+
+  <!-- BUDGET -->
+  <div class="pm-sec">
+  <div class="pm-wrap">
+    <div class="pm-stitle">Investimento per canale</div>
+    <div class="pm-shead">Budget dettagliato · Mag–Giu 2026.</div>
+    <div class="pm-sdesc">Tariffe basate su stime di mercato per Campania 2025–2026. Radio: pacchetti mensili con volume discount -20%. OOH: formato 4×3m e 6×3m su arterie provinciali/statali area Nola–Caserta. Google: CPC stimato 0,80–1,50€. IVA esclusa.</div>
+    <div class="pm-btable-wrap">
+      <table class="pm-bt">
+        <thead><tr><th>Canale</th><th>Maggio (W1–W4)</th><th>Giugno (W5–W9)</th><th>Totale</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td><span class="pm-ch-pill" style="background:#1666C1;"></span>Meta Ads</td><td>4.500 €</td><td>5.500 €</td><td>10.000 €</td><td style="font-size:.73rem;color:rgba(255,255,255,.5);text-align:left;">Ramp-up: 800→1.200→1.500€/sett. Giugno: 1.200–1.500€/sett. + boost inaugurazione</td></tr>
+          <tr><td><span class="pm-ch-pill" style="background:#34A853;"></span>Google Search + Maps</td><td>800 €</td><td>1.200 €</td><td>2.000 €</td><td style="font-size:.73rem;color:rgba(255,255,255,.5);text-align:left;">CPC brand: 0,40–0,80€. CPC veicoli commerciali Napoli: 1,20–2,20€. Maps PIN sponsorizzato incluso</td></tr>
+          <tr><td><span class="pm-ch-pill" style="background:#F5A623;"></span>Radio Marte</td><td>2.400 €</td><td>3.400 €</td><td>5.800 €</td><td style="font-size:.73rem;color:rgba(255,255,255,.5);text-align:left;">Stima pacchetto: ~€65/spot medio con volume disc. Maggio: 36 spot/sett (W2–W4). Giugno: 42→56 spot/sett.</td></tr>
+          <tr><td><span class="pm-ch-pill" style="background:#CC44FF;"></span>Radio Punto Nuovo</td><td>1.200 €</td><td>2.200 €</td><td>3.400 €</td><td style="font-size:.73rem;color:rgba(255,255,255,.5);text-align:left;">Entra in W3. ~€40/spot medio. Focus Morning Drive e fascia sportiva.</td></tr>
+          <tr><td><span class="pm-ch-pill" style="background:#00E5CC;"></span>OOH · 3 impianti</td><td>2.000 €</td><td>3.500 €</td><td>5.500 €</td><td style="font-size:.73rem;color:rgba(255,255,255,.5);text-align:left;">Entra in W3. €350–650/impianto per 2 settimane area Nola/Caserta.</td></tr>
+          <tr style="font-weight:800;"><td>TOTALE INVESTIMENTO MEDIA</td><td>10.900 €</td><td>15.800 €</td><td>26.700 €</td><td style="font-size:.73rem;color:#00E5CC;text-align:left;">IVA esclusa · Non include fee agenzia e produzione</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pm-total-box">
+      <div>
+        <div style="font-size:1rem;font-weight:700;color:rgba(255,255,255,.82);margin-bottom:4px;">Investimento media totale</div>
+        <div class="pm-total-n">26.700 €</div>
+        <div class="pm-total-range">Range realistico: 24.000 – 29.500 € (±10% su tariffe radio/OOH)</div>
+      </div>
+      <div class="pm-total-right">
+        <div class="pm-total-row"><span>Digital (Meta + Google)</span><strong>12.000 € · 45%</strong></div>
+        <div class="pm-total-row"><span>Radio (Marte + P.Nuovo)</span><strong>9.200 € · 34%</strong></div>
+        <div class="pm-total-row"><span>OOH (3 impianti)</span><strong>5.500 € · 21%</strong></div>
+        <div class="pm-total-row" style="border-top:1px solid rgba(255,255,255,.1);padding-top:8px;margin-top:4px;"><span>Durata campagna</span><strong>9 settimane</strong></div>
+        <div class="pm-total-row"><span>Media per settimana</span><strong>~2.967 €</strong></div>
+      </div>
+    </div>
+    <div class="pm-nota" style="margin-top:16px;">⚠️ <strong>Non inclusi:</strong> costi di produzione spot radio (400–800€ per spot, una tantum), fee di gestione campagne digitali (incluse nell'investimento agenzia), affissioni extra nella settimana dell'evento.</div>
+  </div>
+  </div>
+
+  <!-- OOH -->
+  <div class="pm-sec alt">
+  <div class="pm-wrap">
+    <div class="pm-stitle">Posizionamenti OOH</div>
+    <div class="pm-shead">3 impianti primari + 1 opzionale.</div>
+    <div class="pm-sdesc">Selezione basata su flussi di traffico commerciale verso l'area industriale di Nola–Acerra e le principali direttrici da lavoro che attraversano Castello di Cisterna.</div>
+    <div class="pm-ooh-grid">
+      <div class="pm-ooh-card primary">
+        <div class="pm-ooh-num">Posizione 01 · Primaria</div>
+        <div class="pm-ooh-pos">SS7BIS — Svincolo Nola / Acerra</div>
+        <div class="pm-ooh-why">Arteria principale dell'area industriale. Traffico commerciale pesante nelle prime ore del mattino (06:00–09:30). Raggiungo imprenditori e autisti di furgoni da tutta la provincia di Napoli Est e Caserta Sud.</div>
+        <span class="pm-ooh-tag">🏭 Zona ASI Nola</span>
+        <span class="pm-ooh-tag" style="margin-left:6px;">📦 Traffico commerciale alto</span>
+      </div>
+      <div class="pm-ooh-card primary">
+        <div class="pm-ooh-num">Posizione 02 · Primaria</div>
+        <div class="pm-ooh-pos">SP1 Cisterna–Brusciano · Ingresso sede</div>
+        <div class="pm-ooh-why">Strada provinciale di accesso diretto alla sede di Castello di Cisterna. Chiunque frequenti la zona lo vede. Funzione di segnalazione fisica e brand proximity.</div>
+        <span class="pm-ooh-tag">📍 Sede diretta</span>
+        <span class="pm-ooh-tag" style="margin-left:6px;">🚗 Traffico locale</span>
+      </div>
+      <div class="pm-ooh-card primary">
+        <div class="pm-ooh-num">Posizione 03 · Primaria</div>
+        <div class="pm-ooh-pos">Via Circumvallazione Esterna — Casalnuovo / Afragola</div>
+        <div class="pm-ooh-why">Asse di connessione Napoli Est verso tangenziale. Alta densità di artigiani, PMI del settore edile e logistico. Ottima sovrapposizione con i profili Meta target.</div>
+        <span class="pm-ooh-tag">🔧 Artigiani / PMI</span>
+        <span class="pm-ooh-tag" style="margin-left:6px;">🏙️ Napoli Est gateway</span>
+      </div>
+      <div class="pm-ooh-card secondary">
+        <div class="pm-ooh-num">Posizione 04 · Opzionale — settimana inaugurazione</div>
+        <div class="pm-ooh-pos">Svincolo A16 dir. Nola / Avellino</div>
+        <div class="pm-ooh-why">Da attivare solo nella W8–W9. Intercetta il traffico dall'area di Avellino e dalla viabilità autostradale. Costo più alto — giustificato solo per il picco dell'evento.</div>
+        <span class="pm-ooh-tag" style="opacity:.6;">⚡ Solo per evento</span>
+        <span class="pm-ooh-tag" style="margin-left:6px;opacity:.6;">🛣️ A16 Nola</span>
+      </div>
+    </div>
+    <div class="pm-nota">📐 <strong>Formato consigliato:</strong> 4×3m su pensiline autostradali/provinciali. Testo breve: nome Ford NRG + "Apriamo a Maggio — Aziende, scoprite l'offerta fleet" + numero WhatsApp. Niente QR in OOH — non si scannerizza da un'auto in corsa.</div>
+  </div>
+  </div>
+
+  <!-- RADIO -->
+  <div class="pm-sec">
+  <div class="pm-wrap">
+    <div class="pm-stitle">Piano radio — dettaglio</div>
+    <div class="pm-shead">2 emittenti · 4 fasce · Scalare per 9 settimane.</div>
+    <div class="pm-radio-grid">
+      <div class="pm-radio-card">
+        <div class="pm-r-name">📻 Radio Marte</div>
+        <div class="pm-r-sub">Priorità alta · FM 95.6–97.9 MHz · DAB+ · Web streaming</div>
+        <div class="pm-r-row"><span>Inizio flight</span><span class="pm-r-val">W2 (5 maggio)</span></div>
+        <div class="pm-r-row"><span>Spot al giorno (pre-lancio)</span><span class="pm-r-val">4 spot/g</span></div>
+        <div class="pm-r-row"><span>Spot al giorno (lancio)</span><span class="pm-r-val">6 spot/g</span></div>
+        <div class="pm-r-row"><span>Spot al giorno (inaugurazione)</span><span class="pm-r-val">8 spot/g</span></div>
+        <div class="pm-r-row"><span>Costo/spot (listino)</span><span class="pm-r-val">~55–80 €</span></div>
+        <div class="pm-r-row"><span>Costo/spot effettivo (pacchetto)</span><span class="pm-r-val">~25–30 € con disc.</span></div>
+        <div class="pm-r-row"><span>Investimento stimato 2 mesi</span><span class="pm-r-val">5.800 €</span></div>
+      </div>
+      <div class="pm-radio-card">
+        <div class="pm-r-name">📻 Radio Punto Nuovo</div>
+        <div class="pm-r-sub">Priorità alta · ~40 trasmettitori · Talk + Sport</div>
+        <div class="pm-r-row"><span>Inizio flight</span><span class="pm-r-val">W3 (12 maggio)</span></div>
+        <div class="pm-r-row"><span>Spot al giorno (pre-lancio)</span><span class="pm-r-val">4 spot/g</span></div>
+        <div class="pm-r-row"><span>Spot al giorno (lancio)</span><span class="pm-r-val">6 spot/g</span></div>
+        <div class="pm-r-row"><span>Spot al giorno (inaugurazione)</span><span class="pm-r-val">8 spot/g</span></div>
+        <div class="pm-r-row"><span>Costo/spot (listino)</span><span class="pm-r-val">~35–55 €</span></div>
+        <div class="pm-r-row"><span>Costo/spot effettivo (pacchetto)</span><span class="pm-r-val">~15–20 € con disc.</span></div>
+        <div class="pm-r-row"><span>Investimento stimato 2 mesi</span><span class="pm-r-val">3.400 €</span></div>
+      </div>
+    </div>
+    <div style="background:#13203a;border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;">
+      <div style="padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.08);font-size:.7rem;font-weight:800;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.1em;">Fasce orarie — entrambe le emittenti</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;">
+        <div style="padding:16px;border-right:1px solid rgba(255,255,255,.08);">
+          <div style="font-size:1rem;font-weight:900;color:#F5A623;margin-bottom:4px;">06:30–09:00</div>
+          <div style="font-size:.78rem;font-weight:700;color:#fff;margin-bottom:4px;">Morning Drive ⭐</div>
+          <div style="font-size:.72rem;color:rgba(255,255,255,.5);line-height:1.5;">Imprenditori in strada, radio nel furgone. Fascia a più alta attenzione. Priorità assoluta.</div>
+        </div>
+        <div style="padding:16px;border-right:1px solid rgba(255,255,255,.08);">
+          <div style="font-size:1rem;font-weight:900;color:rgba(255,255,255,.82);margin-bottom:4px;">10:00–12:00</div>
+          <div style="font-size:.78rem;font-weight:700;color:#fff;margin-bottom:4px;">Tarda Mattina</div>
+          <div style="font-size:.72rem;color:rgba(255,255,255,.5);line-height:1.5;">Ascolto in laboratorio e ufficio. Tariffe più accessibili. Buon rendimento per il target artigianale.</div>
+        </div>
+        <div style="padding:16px;border-right:1px solid rgba(255,255,255,.08);">
+          <div style="font-size:1rem;font-weight:900;color:rgba(255,255,255,.82);margin-bottom:4px;">12:00–14:30</div>
+          <div style="font-size:.78rem;font-weight:700;color:#fff;margin-bottom:4px;">Pre-pranzo</div>
+          <div style="font-size:.72rem;color:rgba(255,255,255,.5);line-height:1.5;">Spostamenti e pause pranzo. Buon ascolto in auto durante le consegne e i giri commerciali.</div>
+        </div>
+        <div style="padding:16px;">
+          <div style="font-size:1rem;font-weight:900;color:#F5A623;margin-bottom:4px;">16:30–19:00</div>
+          <div style="font-size:.78rem;font-weight:700;color:#fff;margin-bottom:4px;">Afternoon Drive ⭐</div>
+          <div style="font-size:.72rem;color:rgba(255,255,255,.5);line-height:1.5;">Rientro dal lavoro, ultime consegne. Rinforza il messaggio del mattino. Seconda fascia per priorità.</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:16px;background:#13203a;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:18px 20px;">
+      <div style="font-size:.7rem;font-weight:800;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">📢 CTA radio — testo base spot</div>
+      <p style="font-size:.95rem;color:#fff;font-style:italic;line-height:1.6;margin-bottom:10px;">"Nuova sede Ford a Castello di Cisterna — per le aziende del territorio. Flotte, veicoli commerciali, assistenza direttamente da voi. Scrivici su WhatsApp o prenota un incontro di 15 minuti."</p>
+      <p style="font-size:.74rem;color:rgba(255,255,255,.5);">Spot 20" e 30" in mix · Numero WhatsApp nella creatività sonora · Ripetizione del nome città 2 volte per imprinting geografico</p>
+    </div>
+  </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="pm-footer">
+    Ford NRG · Piano Media Lancio Maggio–Giugno 2026 · Castello di Cisterna (NA)<br>
+    Documento riservato — Preparato da RiBrain Studio · ribrainstudio.com<br>
+    <span style="color:rgba(255,255,255,.15);font-size:.64rem;">Stime tariffe basate su valori di mercato Campania 2025–2026. I prezzi definitivi sono soggetti a negoziazione diretta con le singole concessionarie.</span>
+  </div>
+
+  </div><!-- /pm-content -->
+</div><!-- /pm-overlay -->
+
+<script>
+function openPianoMedia(){
+  document.body.classList.add('pm-open');
+  document.getElementById('pm-content').scrollTop = 0;
+}
+function closePianoMedia(){
+  document.body.classList.remove('pm-open');
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') closePianoMedia();
+});
+</script>
 
 <script>
 function openManagerView(){
